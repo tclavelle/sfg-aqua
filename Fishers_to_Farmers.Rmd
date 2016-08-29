@@ -1,0 +1,135 @@
+---
+title: "Fishers to (Fish) Farmers"
+author: "Tyler Clavelle"
+date: "August 17, 2016"
+output: html_document
+---
+
+```{r}
+
+library(dplyr)
+library(tidyr)
+library(purrr)
+library(ggplot2)
+
+source(file = 'aqua_functions.R')
+
+# Initial parameters to use
+r = 1.5
+p = 850
+c = 20
+q = 0.0001
+Kmax = 1000
+B = 500
+phi = 0.5
+A = 300
+E = 10000
+delta = 0.1
+
+```
+
+
+# Introduction
+Most of the world’s small-scale fisheries are overfished and this threatens biodiversity, livelihoods, and food security. A key challenge is reducing fishing pressure, but this becomes complicated as fishermen resist, or are ill equipped, for alternative livelihoods. Expanding sustainable aquaculture is a viable alternative.
+
+
+# Model
+
+The following model of the competitive interaction between aquaculture and wild fisheries is adapted from Hoagland *et al.* (2003).
+
+### Wild Fishery
+A traditional production function is used to model the catch of a wild capture fishery:
+
+\[ h_f = qBE \]
+
+where $h_f$ is the catch from the wild capture stock, $q$ is a catchability coefficient, $B$ is the size (biomass) of the fish stock, and $E$ is the aggregate fishing effort for a homogenous fleet.
+
+For a uniformly distributed fish stock, the carrying capacity, $K$, can be represented in units of area^2^. If $A$ is the area devoted to aquaculture and $K$ is a linear function of $A$ such that carrying capacity changes with $A$ at a constant rate $\varphi$:
+
+$$ K(A) = K - \varphi A $$
+
+A Pella-Tomlinson surplus production model is used to describe the growth, $G(B,A,E)$, of the wild stock when it is being fished:
+
+$$ G(B,A,E) \equiv \dot{B} = \frac{\phi+1}{\phi} gB\left\{1 - (\frac{B}{K(A)})^\phi\right\} - h_f(B,E) $$
+
+where $\dot{B}$ is the growth in biomass, $\phi$ is the Pella-Tomlinson growth shape parameter, and $g$ is the Pella-Tomlinson growth parameter. Taken together, the expression $\frac{\phi+1}{\phi}g$ represents the intrinsic growth rate of the population. Note that when $\phi=1$ the model reproduces the Schaeffer model and $\frac{\phi+1}{\phi}g = r$
+
+The total costs of fishing are modeled as an increasing linear function of fishing effort: $TC = cE$, where $c$ is the unit cost of effort. Because rents are dissipated in open-access equilibrium, a contraction in carrying capacity will reduce the sustainable revenue and force a decline in fishing effort. However, resource rents and fishing effort can also decline in an optimally managed fishery. Assuming the market price of fish, $p$, is constant and that the future is discounted at rate $\delta$, the optimal stock size is as follows:
+
+$$
+\dot{B}[K(A)] = \frac{K(A)}{4} \left\{\left(\frac{c}{pqK(A)} + 1 - \frac{\delta}{r} \right) + \left[\left(\frac{c}{pqK(A)} + 1 - \frac{\delta}{r}\right)^2 + \frac{8c\delta}{pqrK(A)} \right]^\frac{1}{2} \right\}
+$$
+
+The stock size, $K(A)$, also governs the value of fishing quota, $m$ as follows:
+
+$$ m[K(A)] = p - \left(\frac{c}{qB[K(A)]} \right) $$
+
+```{r}
+# graph relationship between quota value and carrying capacity
+df1 <- c(1000:200)
+
+q_p <- sapply(df1, FUN = quotaPrice, p = p, c = c, B = B, q = q)
+
+plot(q_p ~ df1[length(df1):1])
+
+```
+
+### Aquaculture
+Aquaculture harvest, $h_a$ is modeled as the linear production function:
+
+$$ h_a = wA $$
+
+where $h_a$ is the aquaculture harvest and $w$ is a positive coefficient. Thus, additional space, $A$ is required for aquaculture to increase its supply to the market. The cost of aquaculture harvest is modeled as an increasing function of the total geographic area, $A$ allocated to aquaculture, and the investment cost of aquaculture, $I(z)$ is an increment of the total acreage $A$.
+
+The total benefit, $X$, of the system is defined as the sum of revenues from wild capture fisheries and aquaculture according to the following function:
+
+$$ X(E,B,A) = X_f(h_f) + X_a(h_a) $$
+
+Finally, the net benefits of fish production are maximized by choosing the appropriate levels of fishing effort, $E$, and investment in aquaculture acreage, $z$:
+
+$$
+max = \int^\infty_0 \left\{X(E,B,A) - C_f(E) - C_a(A) - I(z) \right\}e^{-\delta t}dt
+$$
+
+subject to:
+
+$$ \dot{B} = F(B, A) - qEB $$
+$$ \dot{A} = z $$
+
+The degree to which aquaculture production affects the profitability of both sectors depends on whether aquaculture and the wild fishery produce the same species and, if so, the degree of substitutability between the two products. If we assume that both sectors produce the same species and are perfect substitutes, then we adopt the following linear demand function:
+
+$$
+P = P_0 - \xi(h_f + h_a)
+$$
+
+where $P_0$ is the choke price and $\xi$ is the slope. The demand equation changes the benefit function to the following:
+
+$$
+X(E,B,A) \equiv \int^{h_f + h_a}_0 (P_0 - \xi\eta)d\eta = P_0 \left[h_f(E,B) + h_a(A) \right] - \frac{\xi}{2} \left[h_f(E,B) + h_a(A) \right]^2
+$$
+
+Cost and investment are defined as linear functions $C_a = vA$ and $I = bz$, respectively.
+
+The marginal conditions for an interior solution include:
+
+$$
+\lambda = P_0 - \xi(qBE + wA) - \frac{c}{qB}
+$$
+
+$$
+\beta = b
+$$
+
+$$
+\dot{\lambda} - \lambda \left[\delta - r + qE + frac{2rB}{K-\varphi A}\right] + qE \left[P_0 - \xi(qBE + wA) \right] = 0
+$$
+
+$$
+\dot{\beta} - \delta \beta + w \left[P_0 - \xi(qBE + wA) \right] - v - \frac{\lambda r \varphi B^2}{(K - \varphi A)^2}
+$$
+
+The solution at steady state can be calculated as follows. First, for any $E$ calculate $B$ using equation
+## References
+
++ Pollnac - Community-Based CRM in North Sulawesi, Indonesia. Discusses seaweed farming in the same region of Indonesia that Rare is operating
++
