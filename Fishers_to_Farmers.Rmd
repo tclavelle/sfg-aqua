@@ -2,7 +2,7 @@
 title: "Fishers to (Fish) Farmers"
 author: "Tyler Clavelle"
 date: "August 17, 2016"
-output: html_document
+output: html_notebook
 ---
 
 ```{r}

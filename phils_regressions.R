@@ -228,9 +228,9 @@ agg_prov <- agg_prov %>%
 # Model 1
 m1_vars <- c('province_name','harvest_type', 'harvest', 'price_type', 'price')  
 fmla_1 <- as.formula(paste("fish_catch ~ ", paste( m1_vars, collapse= "+"))) 
-m1 <- glm(fmla_1, family = gaussian(link = 'log'), data = agg_prov)
+m1 <- glm(fmla_1, family = gaussian(link = 'log'), data = agg_prov, start = rep(1, times = 78))
 
-summary(m1)
+# summary(m1)
 
 
 
