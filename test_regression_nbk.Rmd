@@ -1,11 +1,8 @@
 ---
-title: "Philippines Regressions"
-author: "Tyler Clavelle"
-date: "August 24, 2016"
-output:
-  html_notebook: default
-  html_document: default
+title: "R Notebook"
+output: html_notebook
 ---
+
 
 ```{r, echo = F, warning=F, message=F}
 ########################################################################
@@ -181,7 +178,24 @@ phils_reg <- phils %>%
   filter(area_muni_waters > 0) %>%
   filter(!(province_name == 'EASTERN SAMAR' & year == 1995))
 
-# Correlation matrix
+# Model 1 - regressing municipal catch
+m1 <- glm(log(muni_marine_catch) ~ aqua_harvest, family = gaussian(link = 'log'), data = phils_reg)
+m1a <- glm(log(muni_marine_catch) ~ aqua_price, family = gaussian(link = 'log'), data = phils_reg)
+
+# Model 2 - regressing municipal catch
+m2_vars <- c('province_name','aqua_harvest','aqua_value', 'all_value')  
+fmla_2 <- as.formula(paste("log(muni_marine_catch) ~ ", paste( m2_vars, collapse= "+"))) 
+m2 <- glm(fmla_2, family = gaussian(link = 'log'), data = phils_reg)
+
+# Model 3 - regressing commercial catch
+m3_vars <- c('province_name','aqua_harvest','aqua_value', 'all_value')  
+fmla_3 <- as.formula(paste("log(comm_catch) ~ ", paste( m3_vars, collapse= "+"))) 
+m3 <- glm(fmla_3, family = gaussian(link = 'log'), data = phils_reg)
+
+# summary(m1)
+# summary(m2)
+# summary(m3)
+
 cor_df <- phils_reg %>%
   select(all_catch, aqua_harvest, aqua_price, all_price, area_population) %>%
   mutate(all_catch = log(all_catch))
@@ -193,31 +207,22 @@ corrplot(test, addCoef.col = T)
 
 ### Results
 
-```{r, echo=F, message=F, warning=F, eval=T}
+```{r, echo=F, results='asis', warning=F}
+tbl_1 <- stargazer(m1, m1a, type = 'html')
 
-phils_reg_2 <- phils_reg %>%
+```
+
+```{r, echo=F, message=F, warning=F, eval=F}
+
+test <- phils_reg %>%
   left_join(phils_aqua_df) %>%
-  filter(year > 1995 & is.infinite(marine_price) == F)
-
-# Model 1 - regressing municipal catch
-m1 <- glm(muni_marine_catch ~ marine_harvest, family = gaussian(link = 'log'), data = phils_reg_2)
-
-m1a <- glm(muni_marine_catch ~ marine_harvest + muni_marine_value, family = gaussian(link = 'log'), data = phils_reg_2)
-
-m1b <- glm(muni_marine_catch ~ marine_harvest + log(muni_marine_value) + log(comm_value), family = gaussian(link = 'log'), data = phils_reg_2)
-
-
-
+  filter(year > 1995)
 
 # Model 2 - regressing municipal catch
 m2_vars <- c('province_name','marine_harvest','all_price','area_population')  
 fmla_2 <- as.formula(paste("log(muni_marine_catch) ~ ", paste( m2_vars, collapse= "+"))) 
-m2 <- glm(fmla_2, family = gaussian(link = 'log'), data = phils_reg_2)
+m2 <- glm(fmla_2, family = gaussian(link = 'log'), data = test)
 
+summary(m2)
 
-```
-
-```{r, echo=F, results='asis', warning=F}
-tbl_1 <- stargazer(m1, m1a, m1b, type = 'html')
-
-```
+s```

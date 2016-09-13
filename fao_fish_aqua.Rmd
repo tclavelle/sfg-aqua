@@ -1,0 +1,87 @@
+---
+title: "FAO Aquaculture Fisheries Analysis"
+output: html_notebook
+---
+
+## Intro
+
+## Data
+
+```{r, echo= F, warning=F, message=FALSE}
+library(tidyverse)
+library(stargazer)
+
+## Read in FAO aquaculture and capture fishery data
+aqua <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/FAO Aquaculture Data Final.csv', stringsAsFactors = F))
+
+fish <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/fao_capture_50to14.csv', na.strings = c('...','0 0','-'), stringsAsFactors = F))
+
+exvessel <- tbl_df(read.csv(file = '../price-db-sfg/price-db-results/Exvessel Price Database.csv', stringsAsFactors = F)) %>%
+  select(scientific_name, Year, exvessel) %>%
+  rename(sci_name = scientific_name, 
+         year     = Year)
+## NOTE ## Summarize fishing effort per FAO region on Big Query to include
+
+# Reshape and clean FAO data
+fish <- fish %>%
+  gather('Year',Catch,contains('X'),convert=T) %>%
+  mutate(Year  = as.numeric(gsub('X','',Year)),
+         Catch = as.numeric(gsub(pattern = ' F', replacement = '',Catch))) 
+
+# rename columns
+colnames(fish) <- c('country', 'comm_name', 'sci_name', 'isscaap', 'fao_area', 'fao_code', 'units', 'year', 'catch')
+
+# add exvessel
+fish <- left_join(fish, exvessel)
+
+```
+
+
+```{r, echo=F, warning=F, message=F}
+# select certain columns from aquaculture and standardize with fish
+aqua2 <- aqua %>%
+  filter(Type == 'Mariculture') %>%
+  select(Country, CommName, AreaFAO, Year, AquaProduction, AquaValue) %>%
+  rename(country      = Country,
+         comm_name    = CommName, 
+         area_fao     = AreaFAO,
+         year         = Year,
+         aqua_harvest = AquaProduction,
+         aqua_value   = AquaValue)
+
+aqua2 <- aqua2 %>%
+  group_by(country, year) %>%
+  summarize(aqua_harvest = sum(aqua_harvest, na.rm = T),
+            aqua_value   = sum(aqua_value, na.rm = T)) %>%
+  filter(aqua_harvest > 0) %>%
+  ungroup()
+
+fish2 <- fish %>%
+  group_by(country, year) %>%
+  summarize(catch        = sum(catch, na.rm = T),
+            avg_exvessel = mean(exvessel, na.rm = T)) %>%
+  ungroup()
+
+nat_totals <- fish2 %>%
+  left_join(aqua2) %>%
+  filter(year > 2001 & year < 2014)
+
+p1 <- nat_totals %>%
+  ggplot(aes(x = aqua_value, y = catch)) +
+  geom_point(alpha = 0.7) +
+  stat_smooth(method = 'lm') +
+  scale_y_log10() +
+  scale_x_log10() +
+  facet_wrap(~year, ncol = 4)
+
+print(p1)
+
+
+m1 <- lm(log(nat_totals$catch) ~ nat_totals$year + log(nat_totals$aqua_harvest) + nat_totals$avg_exvessel)
+
+```
+
+
+```{r, echo=F, results='asis'}
+tbl1 <- stargazer(m1, type = 'html')
+```
