@@ -1,0 +1,48 @@
+---
+title: "Co-management Strategies for Capture Fisheries and Aquaculture"
+author: 'Tyler Clavelle'
+output: html_notebook
+---
+
+```{r, echo=FALSE, message=F, warning=F}
+# Packages
+library(tidyverse)
+library(RefManageR)
+
+# Retrieve Zotero Library for Fisher to Farmer project. 
+biblio <- ReadZotero(user = 1470307, .params = list(collection = 'R5Z9BXFT'))
+biblio_df <- names(biblio) # find article keys to reference when in citations
+```
+
+*Target is an article under "Sustainability and Society" in the journal Aquaculture*
+
+## Abstract
+Traditionally, fishers and farmers have been treated as competitors (for space, within a market, for forage fish, for productivity). As such, previous analyses and perceptions of the impacts of mariculture development on fisheries have largely operated under the assumption that both sectors are trying to reach their individual best outcomes. There is a lack of work looking specifically at how cooperative management can simultaneously improve outcomes in the fisheries and mariculture sectors. This paper provides a review of the interactions between mariculture and wild fisheries, the strategies used to manage both sectors (notably property rights), and the outcomes that could result from the presence (and absence) of co-management.  
+
+## Introduction
+Nearly 30% of the world’s stocks are being fished at unsustainable levels and are at risk of collapse. Many of these stocks occur in developing regions like Africa, Asia, and Latin America where regulations are often poor and the number of fishers is increasing. Additionally, the expanding mariculture sector is adding to the pressure on fisheries in many areas – China, Indonesia, India, Chile, Vietnam, and Myanmar are top-10 producers for both capture fisheries and aquaculture `r Cite(biblio['fao_contributing_2016'])`. In the absence of effective policies governing how and where mariculture expands, there can be negative environmental impacts and loss of livelihoods. Fortunately, mariculture’s performance is improving and public policies that establish property rights and guide planning are facilitating sustainable mariculture development in many countries. There are clear needs to reduce effort in threatened fisheries and also ensure the sustainability of the mariculture industry. Reducing fishing capacity is a challenging task due to the complex socioeconomic conditions of many fisheries. By integrating management decisions regarding the coexistence of fisheries and mariculture, barriers to reducing fishing pressure and expanding sustainable mariculture could be lowered simultaneously. 
+
+Fishing is often the primary source of income in many coastal communities and fishers are often opposed to mariculture, working to block it politically. However, if a policy mechanism can compensate fishers, the entry barriers for an efficient mariculture farm may be lowered. In fact, examples of such policies are starting to emerge – New Zealand’s new Aquaculture Arbitration policy provides an official platform for quantifying a mariculture farm’s impact on managed fisheries and compensating fishers appropriately. Another possibility is a policy mechanism that reduces fishing effort and limits the scope of mariculture expansion by means of a market-based exchange. For example, in limited-entry fisheries, a fisher could exchange their fishing permit for an appropriately sized mariculture concession. If quotas are used, the value of the fisherman’s quota could determine the size or location of the concession they receive. 
+
+
+Coastal nations are provided almost full sovereignty to establish, protect, regulate and manage mariculture operations within their exclusive economic zone (EEZ), which extends up to 200 nautical miles from the coast. Few countries have independent mariculture laws, instead governing mariculture through chapters or clauses in more general fisheries laws55. This piecemeal regulatory picture often creates a situation where numerous agencies share responsibility for the implementation, monitoring, and enforcement of mariculture’s environmental regulations, hampering their effectiveness56. In the absence of effective regulations, producers may adopt unsustainable practices that maximize their short-term profits but cause negative environmental and social damage that they are not held accountable for `r Cite(biblio['subasinghe_global_2009'])`. On the other hand, inefficient regulatory systems can dissuade businesses with sustainable practices from pursuing development because of too much uncertainty. 
+
+Different priorities and capacities of aquaculture nations have led to a patchwork regulatory picture. In Southeast Asia and China, efforts to maximize production have led to a focus on the holding capacity of water bodies. Regulations in these regions tend to be reactive, with many newcomers (e.g. Myanmar and Vietnam) promoting economic development at the expense of more restrictive policies like those imposed by incumbents, such as Thailand and the Philippines `r Cite(biblio["hishamunda_commercial_2009"])`55,58. Legislation in many developed nations emphasize the avoidance of negative environmental and socioeconomic impacts. Many developed countries, including the U.S., EU, Canada, and Chile have undergone recent changes in their regulatory frameworks resulting in more stringent licensing requirements. In the U.S., concerns over environmental impacts have led to onerous, costly, and uncertain permitting processes that limit production and contribute to the country’s $12 billion seafood trade deficit (NOAA 2016-2020 Strategic Plan). Large import markets in many developed economies, such as the U.S. and EU, effectively “export” the environmental impacts of mariculture to places with weaker environmental regulations.  
+
+### Property Rights in Fisheries and Aquaculture
+
+Property rights for mariculture are granted via leases, licenses, permits, concessions, or authorizations and the tenure length of property rights is important for fostering sustainable practices. While tenures are generally long, renewable, or even indefinite in many countries, other restrictions may be necessary to avoid unintended consequences. In the Philippines, the cost of acquiring additional land for shrimp mariculture was often lower than the costs of increasing production on existing lands, incentivizing farmers to expand rather than improve efficiency `r Cite(biblio["hishamunda_commercial_2009"])`. Other important considerations include maximum farm size, foreign ownership percentage, and ownership transfer restrictions. These factors can all influence environmental outcomes as well as social impacts, such as monopolization. Though concerns about monopolies and consolidation are merited, experiences in Asia suggest that commercial mariculture can be an effective poverty alleviation tool `r Cite(biblio["hishamunda_commercial_2009"])`.    
+
+### Co-management of Capture Fisheries and Aquaculture
+
+#### Case Study: Tam Giang Lagoon, Vietnam
+Tam Giang Lagoon is a lagoon system covering roughly 22,000 ha in the Thau Thien Hue Province of central Vietnam. The lagoon ecosystem is believed to directly support 100,000 of the 300,000 people living nearby through capture fisheries and/or various forms of brackish water aquaculture `r Cite(biblio['van_tuyen_livelihoods_2010'])`. 
+
+
+### Integrating mariculture and Territorial user rights for fishing (TURFs) 
+TURFs are an area-based and rights-based management program that assigns a specific area to an individual, group or community. By assigning user groups or individuals dedicated access to an area, fishers can be incentivized to actively engage in resource stewardship. In a TURF, mariculture and fisheries would be incentivized to cooperate since the farmer and fisher are the same person (or group of people). In this case, fishing and farming decisions could be made so that they maximize the overall value of seafood production within the TURF.  Therefore, the TURF would choose mariculture species, methods, and locations that would most likely complement or enhance their existing fisheries. 
+
+### References
+```{r, results = 'asis', echo = F} 
+biblio_final <- PrintBibliography(biblio)
+```
