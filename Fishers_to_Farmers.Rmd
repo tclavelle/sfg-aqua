@@ -2,10 +2,13 @@
 title: "Fishers to (Fish) Farmers"
 author: "Tyler Clavelle"
 date: "August 17, 2016"
-output: html_notebook
+output:
+  html_document: default
+  html_notebook: default
+  pdf_document: default
 ---
 
-```{r}
+```{r, echo=F}
 
 library(dplyr)
 library(tidyr)

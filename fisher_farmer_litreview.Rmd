@@ -29,11 +29,15 @@ Coastal nations are provided almost full sovereignty to establish, protect, regu
 
 Different priorities and capacities of aquaculture nations have led to a patchwork regulatory picture. In Southeast Asia and China, efforts to maximize production have led to a focus on the holding capacity of water bodies. Regulations in these regions tend to be reactive, with many newcomers (e.g. Myanmar and Vietnam) promoting economic development at the expense of more restrictive policies like those imposed by incumbents, such as Thailand and the Philippines `r Cite(biblio["hishamunda_commercial_2009"])`55,58. Legislation in many developed nations emphasize the avoidance of negative environmental and socioeconomic impacts. Many developed countries, including the U.S., EU, Canada, and Chile have undergone recent changes in their regulatory frameworks resulting in more stringent licensing requirements. In the U.S., concerns over environmental impacts have led to onerous, costly, and uncertain permitting processes that limit production and contribute to the country’s $12 billion seafood trade deficit (NOAA 2016-2020 Strategic Plan). Large import markets in many developed economies, such as the U.S. and EU, effectively “export” the environmental impacts of mariculture to places with weaker environmental regulations.  
 
-### Property Rights in Fisheries and Aquaculture
+## Property Rights in Fisheries and Aquaculture
 
 Property rights for mariculture are granted via leases, licenses, permits, concessions, or authorizations and the tenure length of property rights is important for fostering sustainable practices. While tenures are generally long, renewable, or even indefinite in many countries, other restrictions may be necessary to avoid unintended consequences. In the Philippines, the cost of acquiring additional land for shrimp mariculture was often lower than the costs of increasing production on existing lands, incentivizing farmers to expand rather than improve efficiency `r Cite(biblio["hishamunda_commercial_2009"])`. Other important considerations include maximum farm size, foreign ownership percentage, and ownership transfer restrictions. These factors can all influence environmental outcomes as well as social impacts, such as monopolization. Though concerns about monopolies and consolidation are merited, experiences in Asia suggest that commercial mariculture can be an effective poverty alleviation tool `r Cite(biblio["hishamunda_commercial_2009"])`.    
 
-### Co-management of Capture Fisheries and Aquaculture
+
+
+## Co-management of Capture Fisheries and Aquaculture
+
+### 
 
 #### Case Study: Tam Giang Lagoon, Vietnam
 Tam Giang Lagoon is a lagoon system covering roughly 22,000 ha in the Thau Thien Hue Province of central Vietnam. The lagoon ecosystem is believed to directly support 100,000 of the 300,000 people living nearby through capture fisheries and/or various forms of brackish water aquaculture `r Cite(biblio['van_tuyen_livelihoods_2010'])`. 
