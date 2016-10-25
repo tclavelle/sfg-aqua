@@ -80,18 +80,15 @@ aqua_harvest <- phils_aqua_nat %>%
   select(grp_var, culture_type, year, aqua_harvest) %>%
   group_by(grp_var, culture_type, year) %>%
   summarize(aqua_harvest = sum(aqua_harvest, na.rm = T)) %>%
-  spread(culture_type, aqua_harvest) 
-
-colnames(aqua_harvest) <- c('grp_var','year','freshwater_harvest','marine_harvest','mussel_harvest','oyster_harvest','seaweed_harvest')
+  ungroup() 
 
 aqua_price <- phils_aqua_nat %>%
   left_join(farm_culture) %>%
   select(grp_var, culture_type, year, aqua_value_us, aqua_harvest) %>%
   group_by(grp_var, culture_type, year) %>%
   summarize(aqua_price = sum(aqua_value_us, na.rm = T) / sum(aqua_harvest, na.rm = T)) %>%
-  spread(culture_type, aqua_price) 
+  ungroup()
 
-colnames(aqua_price) <- c('grp_var','year','freshwater_price','marine_price','mussel_price','oyster_price','seaweed_price')
 
 phils_aqua_nat <- aqua_harvest %>%
   left_join(aqua_price)
@@ -167,73 +164,39 @@ return(phils_all_nat)
 
 # create regression data
 reg_level<-prep_regression(phils_aqua_df = phils_aqua, phils_fish_df = phils_fish, region_data, grp_var = 'region_name')
-prov_level<-prep_regression(phils_aqua_df = phils_aqua, phils_fish_df = phils_fish, region_data, grp_var = 'province_name')
+
+prov_level<-prep_regression(phils_aqua_df = phils_aqua, phils_fish_df = phils_fish, region_data, grp_var = 'province_name') %>%
+  rename(province_name = grp_var) %>%
+  filter(culture_type != 'Freshwater' & fish_harvest > 0)
 
 # save regression input data
-# write.csv(prov_level, file = '../../../Box Sync/aqua-phils-data/philippines_regression_input.csv')
-
-########################################################################
-### Compile provincial level aggregated dataset  -----------------------
-
-# Aggregate provincial level across species
-agg_prov <- prov_level %>%
-  rename(province_name = grp_var) %>%
-  group_by(province_name, species, year) %>%
-  summarize(fish_catch         = sum(fish_harvest, na.rm = T),
-            fish_price_avg     = mean(fish_price, na.rm = T),
-            marine_harvest     = sum(marine_harvest, na.rm = T),
-            marine_price       = mean(marine_price, na.rm = T),
-            oyster_harvest     = sum(oyster_harvest, na.rm = T),
-            oyster_price       = mean(oyster_price, na.rm = T),
-            mussel_harvest     = sum(mussel_harvest, na.rm = T),
-            mussel_price       = mean(mussel_price, na.rm = T),
-            freshwater_harvest = sum(freshwater_harvest, na.rm = T),
-            freshwater_price   = mean(freshwater_price, na.rm = T),
-            seaweed_harvest    = sum(seaweed_harvest, na.rm = T),
-            seaweed_price      = mean(seaweed_price, na.rm = T)) %>%
-  mutate(all_marine_harvest    = sum(marine_harvest + oyster_harvest + mussel_harvest, na.rm = T)) %>%
-  ungroup()
-
-agg_price <- agg_prov %>%
-  select(province_name, species, year, fish_price_avg, marine_price, oyster_price, mussel_price, freshwater_price, seaweed_price) %>%
-  gather(price_type, price, 4:9)
-
-agg_prov <- agg_prov %>%
-  select(province_name, species, year, fish_catch, marine_harvest, oyster_harvest, mussel_harvest, freshwater_harvest, seaweed_harvest) %>%
-  gather(harvest_type, harvest, 5:9) %>% 
-  left_join(agg_price)
-
-
-# Assign aquaculture types farm styles
-# farm_culture <- data_frame(archetype    = unique(phils_aqua$archetype),
-#                            culture_type = c('Marine', 'Marine', 'Seaweed', 'Freshwater', 'Marine', 'Freshwater', 'Freshwater',
-#                                             'Mussel', 'Oyster', 'Freshwater', 'Freshwater', 'Marine', 'Marine'))
-# agg_prov2 <- phils_aqua %>%
-#   left_join(farm_culture) %>%
-#   group_by(province_name, year, culture_type) %>%
-#   summarize(harvest = sum(harvest, na.rm = T)) %>%
-#   spread(culture_type, harvest) %>%
-#   right_join(phils_80to12)
-# 
-# # Join with 1980's data. The fish_catch variable contains the aggregated marine and commercial harvests
-# agg_prov_all <- agg_prov2 %>%
-#   left_join(agg_prov)
-
-
+write.csv(prov_level, file = 'sfg-aqua-data/phils_regression_df_species_2002to2014.csv')
 
 ########################################################################
 ### Run regressions  ---------------------------------------------------
 
 ## Regression variables
-# Model 1
-m1_vars <- c('province_name','harvest_type', 'harvest', 'price_type', 'price')  
-fmla_1 <- as.formula(paste("fish_catch ~ ", paste( m1_vars, collapse= "+"))) 
-m1 <- glm(fmla_1, family = gaussian(link = 'log'), data = agg_prov, start = rep(1, times = 78))
-
+# Model 1 - run model across all species
+# m1 <- lm(log(fish_harvest) ~ aqua_harvest + culture_type + province_name + aqua_harvest*culture_type, data = prov_level)
+# 
 # summary(m1)
-
-
-
-
-
-
+# 
+# # Model 2 - run model on each species
+# # Define model formula
+# m2_fmla <- 'log(fish_harvest) ~ province_name + culture_type + aqua_harvest + 
+# culture_type * aqua_harvest'
+# 
+# # Apply model to scallop and snapper catch series and save model fits
+# fits <- prov_level %>%
+#   group_by(species) %>%
+#   do(fit = lm(m2_fmla, data = .))
+# 
+# # Save table of model summaries
+# m1_summary <- fits %>%
+#   glance(fit)
+# 
+# fits %>%
+#   tidy(fit)
+# 
+# fits %>%
+#   map(summary)

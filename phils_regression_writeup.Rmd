@@ -3,221 +3,223 @@ title: "Philippines Regressions"
 author: "Tyler Clavelle"
 date: "August 24, 2016"
 output:
+  pdf_document:
+    fig_caption: yes
   html_notebook: default
   html_document: default
 ---
 
-```{r, echo = F, warning=F, message=F}
+```{r data_load, echo = F, warning=F, message=F, error=FALSE}
 ########################################################################
 ### Load packages and data ---------------------------------------------
 
 ## Packages
-library(tidyr)
-library(dplyr)
-library(purrr)
-library(ggplot2)
-library(readxl)
+library(tidyverse)
 library(broom)
-library(readr)
 library(corrplot)
 library(knitr)
 library(stargazer)
+library(scales)
+library(rgdal)
+library(rgeos)
+library(grid)
+library(gridExtra)
 
-## Data files
-# Fishery and aquaculture production data
-phils_prod <- read.csv(file = '../../Google Drive/Project Data/phils-data/phils-prod-80-12/phils_prov_prod_80to12_1.csv', header = F, na.strings = c('.','..'), stringsAsFactors = F) %>%
-  bind_rows(read.csv(file = '../../Google Drive/Project Data/phils-data/phils-prod-80-12/phils_prov_prod_80to12_2.csv', header = F, na.strings = c('.','..'), stringsAsFactors = F))
+## Regression data files
+agg_df <- read_csv(file = 'sfg-aqua-data/phils_regression_df_1980to2012.csv') # aggregate provincial data from 1980 to 2012 
+species_df <- read_csv(file = 'sfg-aqua-data/phils_regression_df_species_2002to2014.csv') # species level provincial data from 2002 to 2012
 
-colnames(phils_prod) <- c('province_name','sector', c(1980:2012))
+## Map data files
+# shapefile map data
+provmap <-readOGR(dsn = '../../Google Drive/Project Data/phils-data/Provinces', layer = 'Provinces', stringsAsFactors = F, verbose = F)
 
-# Fishery and aquaculture value data
-phils_val <- read.csv(file = '../../Google Drive/Project Data/phils-data/phils-prod-80-12/phils_prov_10to14_value_1.csv', header = F, na.strings = c('.','..'), stringsAsFactors = F) %>%
-  bind_rows(read.csv(file = '../../Google Drive/Project Data/phils-data/phils-prod-80-12/phils_prov_10to14_value_2.csv', header = F, na.strings = c('.','..'), stringsAsFactors = F))
+# Order of municipalities and provinces in shapefile and corresponding polygon id number
+prvs <- toupper(provmap@data$NAME_1)
 
-colnames(phils_val) <- c('province_name','sector', c(1980:2014))
+# lookup table for matching provinces to polygon ids
+lktable2 <- data_frame(prvs, 'id' = as.character(c(0:(length(prvs)-1)))) %>%
+  rename(province_name  = prvs)
 
-# phils aquaculture data 1996 to 2014
-phils_aqua <- read.csv(file = '../../Google Drive/Project Data/phils-data/phils_aqua_processed.csv', stringsAsFactors = F)
-
-# Region socioeconomic data
-region_data <- tbl_df(read.csv(file = '../../Google Drive/Project Data/phils-data/phils_fisheries_regions.csv', stringsAsFactors = F))
-
-colnames(region_data) <- tolower(colnames(region_data))
-```
-
-
-```{r, echo=F, message=F, warning=F}
-## Process data into single regression data file
-phils_prod <- phils_prod %>%
-  gather(year, harvest, 3:35) %>%
-  mutate(year = as.numeric(year)) %>%
-  spread(sector, harvest)
-
-phils_val <- phils_val %>%
-  select(-`2013`, -`2014`) %>%
-  gather(year, value, 3:35) %>%
-  mutate(year = as.numeric(year)) %>%
-  spread(sector, value)
-
-phils <- left_join(phils_prod, phils_val, by = c("province_name", 'year'))
-
-phils$province_name <- toupper(gsub(phils$province_name, pattern = '....', replacement = '', fixed = T))
-
-phils <- phils %>%
-  rename(muni_marine_catch = `....Marine Municipal Fisheries.x`,
-         aqua_harvest      = `..Aquaculture.x`,
-         comm_catch        = `..Commercial Fisheries.x`,
-         muni_catch        = `..Municipal Fisheries.x`,
-         muni_marine_value = `....Marine Municipal Fisheries.y`,
-         aqua_value      = `..Aquaculture.y`,
-         comm_value        = `..Commercial Fisheries.y`,
-         muni_value        = `..Municipal Fisheries.y`) %>%
-  group_by(province_name, year) %>%
-  mutate(all_catch  = sum(muni_marine_catch + comm_catch, na.rm = T),
-         all_value  = sum(muni_marine_value + comm_value, na.rm = T),
-         muni_price = muni_marine_value / muni_marine_catch,
-         aqua_price = aqua_value / aqua_harvest,
-         comm_price = comm_value / comm_catch,
-         all_price  = all_value / all_catch)
+# scatter plot theme
 
 ```
 
-```{r, echo=F, message=F, warning=F}
+## Abstract
+Traditionally, fishers and farmers have been treated as competitors (for space, within a market, for forage fish, for productivity), and fishers are often staunchly oppossed to aquaculture expansion. Aquaculture certainly interacts with wild fisheries in a number of ways, however the magnitude of these interactions is poorly known and quantified. This analysis uses provincial scale data on wild fisheries and aquaculture in the Philippines to examine if aquaculture activities impact wild fishery landings and value. Results show that, while aquaculture does indeed have a significant impact on wild fisheries, the impact is extremely small and varies by target fishery and aquaculture type (marine finfish, mussels, oysters, and seaweed). 
 
-# aggregate all fishery and aquaculture data by region
-phils_aqua_df <- phils_aqua %>%
-  rename(aqua_harvest  = harvest,
-         aqua_price    = price,
-         aqua_value_us = value_us,
-         farm_type     = archetype) %>%
-  group_by(province_name, farm_type, year) %>%
-  summarize(aqua_harvest  = sum(aqua_harvest, na.rm = T),
-            aqua_value_us = sum(aqua_value_us, na.rm = T),
-            aqua_price    = sum(aqua_value_us, na.rm = T) / sum(aqua_harvest, na.rm = T)) %>%
-  ungroup()
+## Introduction
 
-## Assign variables by culture type 
-farm_culture <- data_frame(farm_type    = unique(phils_aqua_df$farm_type),
-                           culture_type = c('Marine', 'Marine', 'Seaweed', 'Freshwater', 'Marine', 'Freshwater', 'Freshwater',
-                                            'Mussel', 'Oyster', 'Freshwater', 'Freshwater', 'Marine', 'Marine'))
-# Spread culture types out 
-aqua_harvest <- phils_aqua_df %>%
-  left_join(farm_culture) %>%
-  select(province_name, culture_type, year, aqua_harvest) %>%
-  group_by(province_name, culture_type, year) %>%
-  summarize(aqua_harvest = sum(aqua_harvest, na.rm = T)) %>%
-  spread(culture_type, aqua_harvest) 
-
-colnames(aqua_harvest) <- c('province_name','year','freshwater_harvest','marine_harvest','mussel_harvest','oyster_harvest','seaweed_harvest')
-
-aqua_price <- phils_aqua_df %>%
-  left_join(farm_culture) %>%
-  select(province_name, culture_type, year, aqua_value_us, aqua_harvest) %>%
-  group_by(province_name, culture_type, year) %>%
-  summarize(aqua_price = sum(aqua_value_us, na.rm = T) / sum(aqua_harvest, na.rm = T)) %>%
-  spread(culture_type, aqua_price) 
-
-colnames(aqua_price) <- c('province_name','year','freshwater_price','marine_price','mussel_price','oyster_price','seaweed_price')
-
-phils_aqua_df <- aqua_harvest %>%
-  left_join(aqua_price) %>%
-  select(province_name, year, marine_harvest, marine_price)
-  
-```
-
-
-```{r, echo=F, warning=F, message=F}
-########################################################################
-### Prepare socioeconomic data for inclusion in regression 
-
-# Aggregate by region 
-reg_1 <- region_data %>%
-  tbl_df() %>%
-  select(-x, -region_psgc, -province_psgc, -municipal_psgc, -psgc, -component.lgu, -income_class) %>%
-  separate(income.class, into = c('income_class','drop'), sep = '[[:lower:]]') %>%
-  mutate(income_class = as.numeric(income_class)) %>%
-  group_by(province_name) %>%
-  summarize(length_coast     = sum(length_of_coastline_km, na.rm = T),
-            no_barangays     = sum(no_of_barangays, na.rm = T),
-            area_muni_waters = sum(area_of_municipal_waters_ha, na.rm = T),
-            income_class     = mean(income_class, na.rm = T),
-            mangroves        = sum(mangroves, na.rm = T),
-            coral            = sum(coralreefs, na.rm = T)) %>%
-
-  ungroup()
-
-# Extract and spread population data into single variable
-reg_pop <- region_data %>%
-  select(province_name, population_1980, population_1990, population_2000, population_2010) %>%
-  gather(pop_var, population, 2:5) %>%
-  group_by(province_name, pop_var) %>%
-  summarize(area_population = sum(population, na.rm = T)) %>%
-  separate(pop_var, into = c('variable', 'years'), sep = '_') %>%
-  mutate(years = as.numeric(years)) %>%
-  complete(years = 1980:2013) %>%
-  rename(year = years) %>%
-  ungroup()
-
-regs <- unique(reg_pop$province_name) # unique regions
-
-# Fill in missing years for population
-for(a in 1:length(regs)) {
-  reg_pop$area_population[reg_pop$province_name == regs[a] & reg_pop$year < 1990] <- reg_pop$area_population[reg_pop$province_name == regs[a] & reg_pop$year == 1980]
-  reg_pop$area_population[reg_pop$province_name == regs[a] & reg_pop$year > 1990 & reg_pop$year < 2000 ] <- reg_pop$area_population[reg_pop$province_name == regs[a] & reg_pop$year == 1990]
-  reg_pop$area_population[reg_pop$province_name == regs[a] & reg_pop$year > 2000 & reg_pop$year < 2010 ] <- reg_pop$area_population[reg_pop$province_name == regs[a] & reg_pop$year == 2000]
-  reg_pop$area_population[reg_pop$province_name == regs[a] & reg_pop$year > 2010 ] <- reg_pop$area_population[reg_pop$province_name == regs[a] & reg_pop$year == 2010]
-}
-
-phils <- phils %>%
-  left_join(reg_1) %>%
-  left_join(reg_pop) 
-```
-
-
-```{r, echo=F, warning=F, message=F}
-# Subset to only municipalities with non-zero area of waters
-phils_reg <- phils %>%
+```{r intro_figures, echo=FALSE, message=F, warning=FALSE}
+## Line plot
+figs12_df <- agg_df %>%
+  group_by(year) %>%
+  summarize(`Wild fisheries`     = sum(all_catch, na.rm = T),
+            `Aquaculture`        = sum(aqua_harvest_all, na.rm = T),
+            `Municipal fisheries` = sum(muni_marine_catch, na.rm = T),
+            `Commercial fisheries` = sum(comm_catch, na.rm = T)) %>%
+  gather(key = 'Sector', value = 'Harvest', 2:5) %>%
   ungroup() %>%
-  filter(area_muni_waters > 0) %>%
-  filter(!(province_name == 'EASTERN SAMAR' & year == 1995))
+  mutate(plot_num = 'A')
 
-# Correlation matrix
-cor_df <- phils_reg %>%
-  select(all_catch, aqua_harvest, aqua_price, all_price, area_population) %>%
-  mutate(all_catch = log(all_catch))
+# Add panel assignments
+figs12_df$plot_num[figs12_df$Sector %in% c('Municipal fisheries', 'Commercial fisheries')] <- 'B'
 
-test <- cor(cor_df, use = 'complete.obs')
+# add another aquaculture row for use in second panel
+figs12_df <- figs12_df %>%
+  filter(Sector == 'Aquaculture') %>%
+  mutate(plot_num = 'B') %>%
+  bind_rows(figs12_df)
 
-corrplot(test, addCoef.col = T)
+fig1 <- figs12_df %>%
+  ggplot(aes(x = year, y = Harvest, shape = Sector, linetype = Sector)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(labels = comma) +
+  scale_shape_manual(values = c('Aquaculture' = 0, 'Wild fisheries' = 1, 'Municipal fisheries' = 7, 'Commercial fisheries' = 10)) +
+  labs(y = 'Production (metric tonnes, MT)',
+       x = 'Year') +
+  facet_wrap(~plot_num)
+
+## Summary maps
+# Map fishery catch by province
+map1 <- left_join(lktable2, subset(agg_df, year == 2012)) # subset results to most recent year available
+provmap <- tidy(provmap) # Tidy map to dataframe for mapping
+provmap <- left_join(provmap, map1) # Join harvest data and map data
+
+# Fish catch map
+muni_catch_map <- ggplot(provmap, aes(x = long, y = lat, group = group, fill = muni_marine_catch)) +
+  geom_polygon() +
+  scale_fill_continuous(labels = comma, breaks = c(seq(from = 0, to = 175000, by = 25000))) +
+  labs(fill = 'Catch (MT)')
+
+#ggsave(muni_catch_map, filename = 'muni_catch_map.pdf')
+
+# Aquaculture harvest map
+muni_aqua_map <- ggplot(provmap, aes(x = long, y = lat, group = group, fill = aqua_harvest_all)) +
+  geom_polygon() +
+  scale_fill_continuous(labels = comma) +
+  labs(fill = 'Catch (MT)')
+
+# Calculate % change in catch and aquaculture for all provinces and map with diverging scale
+perc_change_df <- species_df %>%
+  group_by(year, province_name) %>%
+  summarize(catch = sum(fish_harvest, na.rm = T),
+            aqua  = sum(aqua_harvest, na.rm = T)) %>%
+  group_by(province_name) %>%
+  mutate(catch_perc = 100*(catch[year == 2014] - catch[year == 2002]) / catch[year == 2002] ,
+         aqua_perc = 100*(aqua[year == 2014] - aqua[year == 2002])/aqua[year == 2002]) %>%
+  filter(year == 2014) %>%
+  select(-year)
+
+# Join percentages with map data
+map2 <- left_join(lktable2, perc_change_df)
+
+provmap2 <- left_join(provmap, map2) 
+
+muni_perc_map_fish <- ggplot(provmap2, aes(x = long, y = lat, group = group, fill = catch_perc)) +
+  geom_polygon() +
+  scale_fill_gradient2(labels = comma, low = 'red', high = muted('green')) +
+  labs(fill = 'Percent change\n2002-2014')
+
+# ggsave(filename = 'perc_change_catch.pdf')
+
+muni_perc_map_aqua <- ggplot(provmap2, aes(x = long, y = lat, group = group, fill = aqua_perc)) +
+  geom_polygon() +
+  scale_fill_gradient2(labels = comma, low = 'red', high = muted('green')) +
+  labs(fill = 'Percent change\n2002-2014')
+
+# ggsave(filename = 'perc_change_aqua.pdf')
+
 ```
+
+The Philippines is one of the world's major producers of seafood from both wild fisheries and aquaculture, ranking 12th and 5th respectively. Within national waters, fishery production steadily increased from `r prettyNum(figs12_df$Harvest[1], big.mark = ',')` metric tons (MT) in 1980 to `r prettyNum(figs12_df$Harvest[28], big.mark = ',')` MT in 2007, since which it has hovered around ~1.5 million MT. Fisheries management is decentralized in the Philippines, with national regulations granting municipalities jurisdiction over their nearshore municipal waters (< 15 km). As a result, fishery statistics in the Philippines are reported seperately for the municipal and commercial fleets, with the municipal fishery responsible for `r round(100*(figs12_df$Harvest[99] / figs12_df$Harvest[28]), digits = 1)` in 2012 (Figure 1).
+
+```{r fig1, echo=FALSE, warning=F, message=F, fig.width=6.5, fig.height=2.5, fig.cap='Annual production (MT) by marine sector in the Philippines from 1980 to 2012'}
+fig1
+```
+
+Fisheries in the Philippines face a diverse array of threats, including overexploitation, illegal and destructive fishing, habitat loss, coastal pollution, and climate change. Some of these forces already receive considerable attention. Although national regulations ban fishing by the commercial fleet in municipal waters, illegal encroachment is believed to be rampant, with scaled-down commercial vessels, referred to as *'baby trawlers'* operating extensively in municipal waters (Palomares, M. L. D., and D. Pauly, 2010). Numerous destructive fishing practices also occur throughout the Philippines, including blast fishing, several destructive forms of trawling, and the use of poisonous and noxious substances such as cyanide. In 1993, the extent of damaged coral in the Santiago Island area of Luzon, Philippines was approximately 50%, with a moderate estimate of annual coral loss rate of 2.84% (Saila, Kocic, and McManus, 1993). The authors also provided a "worst case" estimate of 27.5% coral loss per year (13% blast fishing; 9.5% cyanide; 5% anchor damage), demonstrating the large uncertainty around the magnitude of destructive activities. Climate change is predicted to decrease fisheries productivity in the low to mid latitudes, including a projected ~10% decline in the Philippines by 2050 (Barange et al. 2014). 
+
+
+```{r, eval=T, echo=F, message=F,  warning=F, fig.cap='Fishery catch (MT) by province in 2014'}
+muni_catch_map
+```
+
+
+```{r, eval=T, echo=F, message=F,  warning=F, fig.cap='Marine aquaculture production (MT) by province in 2014'}
+muni_aqua_map
+```
+
+
+```{r, eval=T, echo=F, message=F,  warning=F, fig.cap='Percent change in fishery catches by province between 2002 and 2014'}
+muni_perc_map_fish
+```
+ 
+ 
+```{r, eval=T, echo=F, message=F,  warning=F, fig.cap='Percent change in marine aquaculture production between 2002 and 2014'}
+muni_perc_map_aqua
+```
+
+
+## Materials and Methods
+Data for this analysis comes from several sources. Fishery catch data for both the municipal and commercial sectors was obtained from the CountrySTAT Philippines data portal. These data include time series of catch (MT) and value for 31 species items organized by region and province.
+
 
 ### Results
 
-```{r, echo=F, message=F, warning=F, eval=T}
+```{r, echo=F, warning=F, message=F, fig.width= 6.5, fig.height=6.5, fig.cap='Correlation matrix of regression variables. Numbers represent correlation coefficients'}
 
-phils_reg_2 <- phils_reg %>%
-  left_join(phils_aqua_df) %>%
-  filter(year > 1995 & is.infinite(marine_price) == F)
+# Correlation matrix
+cor_df <- agg_df %>%
+  select(all_catch, muni_marine_catch, comm_catch, aqua_harvest_all, aqua_value, muni_value, comm_value, muni_price, comm_price, all_price)
 
-# Model 1 - regressing municipal catch
-m1 <- glm(muni_marine_catch ~ marine_harvest, family = gaussian(link = 'log'), data = phils_reg_2)
+test <- cor(cor_df, use = 'complete.obs')
 
-m1a <- glm(muni_marine_catch ~ marine_harvest + muni_marine_value, family = gaussian(link = 'log'), data = phils_reg_2)
-
-m1b <- glm(muni_marine_catch ~ marine_harvest + log(muni_marine_value) + log(comm_value), family = gaussian(link = 'log'), data = phils_reg_2)
+corrplot(test, addCoef.col = T, tl.cex = 1, number.cex = 1)
+```
 
 
+```{r, eval=T, echo=F, message=F, warning=F}
 
+## Regression variables
+# Model 1 - run model across all species
+m1 <- lm(log(muni_marine_catch) ~ aqua_harvest_all + culture_type + province_name + aqua_harvest_all*culture_type, data = agg_df)
 
-# Model 2 - regressing municipal catch
-m2_vars <- c('province_name','marine_harvest','all_price','area_population')  
-fmla_2 <- as.formula(paste("log(muni_marine_catch) ~ ", paste( m2_vars, collapse= "+"))) 
-m2 <- glm(fmla_2, family = gaussian(link = 'log'), data = phils_reg_2)
+# summary(m1)
 
+# # Model 2 - run model on each species
+# # Define model formula
+m2_fmla <- 'log(fish_harvest) ~ province_name + culture_type + aqua_harvest +
+culture_type * aqua_harvest'
+
+# m2 <- lm(m2_fmla, species_df)
+# summary(m2)
+
+# Apply model to scallop and snapper catch series and save model fits
+fits <- species_df %>%
+  group_by(species) %>%
+  do(fit = lm(m2_fmla, data = .))
+
+# Save table of model summaries
+m1_summary <- fits %>%
+  glance(fit)
+
+# fits %>%
+#   tidy(fit)
+# 
+# fits %>%
+#   map(summary)
 
 ```
 
-```{r, echo=F, results='asis', warning=F}
-tbl_1 <- stargazer(m1, m1a, m1b, type = 'html')
 
+```{r, eval=T, echo=F, results='asis', warning=F}
+# tbl_1 <- stargazer(m1lm, type = 'html')
+stargazer(m1, type = 'latex', omit = c('province_name'), header = F)
+```
+
+
+```{r, eval=T, echo=F, results='asis', warning=F}
+# tbl_1 <- stargazer(m1lm, type = 'html')
+stargazer(fits$fit, type = 'latex', omit = c('province_name'), header = F)
 ```

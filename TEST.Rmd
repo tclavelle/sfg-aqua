@@ -1,0 +1,150 @@
+---
+title: "test"
+output: pdf_document
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = F, message = F, warning = F)
+```
+
+
+```{r data_load, echo = F, warning=F, message=F, error=FALSE}
+########################################################################
+### Load packages and data ---------------------------------------------
+
+## Packages
+library(tidyverse)
+library(broom)
+library(corrplot)
+library(knitr)
+library(stargazer)
+library(scales)
+library(rgdal)
+library(rgeos)
+library(grid)
+library(gridExtra)
+
+## Regression data files
+agg_df <- read_csv(file = 'sfg-aqua-data/phils_regression_df_1980to2012.csv') # aggregate provincial data from 1980 to 2012 
+species_df <- read_csv(file = 'sfg-aqua-data/phils_regression_df_species_2002to2014.csv') # species level provincial data from 2002 to 2012
+
+## Map data files
+# shapefile map data
+provmap <-readOGR(dsn = '../../Google Drive/Project Data/phils-data/Provinces', layer = 'Provinces', stringsAsFactors = F)
+
+# Order of municipalities and provinces in shapefile and corresponding polygon id number
+prvs <- toupper(provmap@data$NAME_1)
+
+# lookup table for matching provinces to polygon ids
+lktable2 <- data_frame(prvs, 'id' = as.character(c(0:(length(prvs)-1)))) %>%
+  rename(province_name  = prvs)
+```
+
+## Abstract
+Traditionally, fishers and farmers have been treated as competitors (for space, within a market, for forage fish, for productivity), and fishers are often staunchly oppossed to aquaculture expansion. Aquaculture certainly interacts with wild fisheries in a number of ways, however the magnitude of these interactions is poorly known and quantified. This analysis uses provincial scale data on wild fisheries and aquaculture in the Philippines to examine if aquaculture activities impact wild fishery landings and value. Results show that, while aquaculture does indeed have a significant impact on wild fisheries, the impact is extremely small and varies by target fishery and aquaculture type (marine finfish, mussels, oysters, and seaweed). 
+
+## Introduction
+
+```{r intro_figures, echo=FALSE, message=F, warning=FALSE}
+## Line plot
+figs12_df <- agg_df %>%
+  group_by(year) %>%
+  summarize(`Wild fisheries`     = sum(all_catch, na.rm = T),
+            `Aquaculture`        = sum(aqua_harvest_all, na.rm = T),
+            `Municipal fisheries` = sum(muni_marine_catch, na.rm = T),
+            `Commercial fisheries` = sum(comm_catch, na.rm = T)) %>%
+  gather(key = 'Sector', value = 'Harvest', 2:5) %>%
+  ungroup() %>%
+  mutate(plot_num = 'A')
+
+# Add panel assignments
+figs12_df$plot_num[figs12_df$Sector %in% c('Municipal fisheries', 'Commercial fisheries')] <- 'B'
+
+# add another aquaculture row for use in second panel
+figs12_df <- figs12_df %>%
+  filter(Sector == 'Aquaculture') %>%
+  mutate(plot_num = 'B') %>%
+  bind_rows(figs12_df)
+
+fig1 <- figs12_df %>%
+  ggplot(aes(x = year, y = Harvest, shape = Sector, linetype = Sector)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(labels = comma) +
+  scale_shape_manual(values = c('Aquaculture' = 0, 'Wild fisheries' = 1, 'Municipal fisheries' = 7, 'Commercial fisheries' = 10)) +
+  labs(y = 'Production (metric tonnes, MT)',
+       x = 'Year') +
+  facet_wrap(~plot_num)
+
+
+## Summary maps
+# Map fishery catch by province
+map1 <- left_join(lktable2, subset(agg_df, year == 2012)) # subset results to most recent year available
+provmap <- tidy(provmap) # Tidy map to dataframe for mapping
+provmap <- left_join(provmap, map1) # Join harvest data and map data
+
+# Fish catch map
+muni_catch_map <- ggplot(provmap, aes(x = long, y = lat, group = group, fill = muni_marine_catch)) +
+  geom_polygon() +
+  scale_fill_continuous(labels = comma)
+
+# Aquaculture harvest map
+muni_aqua_map <- ggplot(provmap, aes(x = long, y = lat, group = group, fill = aqua_harvest_all)) +
+  geom_polygon() +
+  scale_fill_continuous(labels = comma)
+
+# Calculate % change in catch and aquaculture for all provinces and map with diverging scale
+perc_change_df <- species_df %>%
+  group_by(year, province_name) %>%
+  summarize(catch = sum(fish_harvest, na.rm = T),
+            aqua  = sum(aqua_harvest, na.rm = T)) %>%
+  group_by(province_name) %>%
+  mutate(catch_perc = 100*(catch[year == 2014] - catch[year == 2002]) / catch[year == 2002] ,
+         aqua_perc = 100*(aqua[year == 2014] - aqua[year == 2002])/aqua[year == 2002]) %>%
+  filter(year == 2014) %>%
+  select(-year)
+
+# Join percentages with map data
+map2 <- left_join(lktable2, perc_change_df)
+
+provmap2 <- left_join(provmap, map2) 
+
+muni_perc_map_fish <- ggplot(provmap2, aes(x = long, y = lat, group = group, fill = catch_perc)) +
+  geom_polygon() +
+  scale_fill_gradient2(labels = comma, low = 'red', high = muted('green'))
+
+# ggsave(filename = 'perc_change_catch.pdf')
+
+muni_perc_map_aqua <- ggplot(provmap2, aes(x = long, y = lat, group = group, fill = aqua_perc)) +
+  geom_polygon() +
+  scale_fill_gradient2(labels = comma, low = 'red', high = muted('green'))
+
+# ggsave(filename = 'perc_change_aqua.pdf')
+
+# map_2 <- grid.arrange(muni_perc_map_fish, muni_perc_map_aqua, nrow = 1)
+# 
+# ggsave(filename = 'perc_change_map.pdf')
+
+```
+
+The Philippines is one of the world's major producers of seafood from both wild fisheries and aquaculture, ranking 12th and 5th respectively. Within national waters, fishery production steadily increased from `r figs12_df$Harvest[1]` metric tons (MT) in 1980 to `r figs12_df$Harvest[28]` MT in 2007, since which it has hovered around ~1.5 million MT. Fisheries management is decentralized in the Philippines, with national regulations granting municipalities jurisdiction over their nearshore municipal waters (< 15 km). As a result, fishery statistics in the Philippines are reported seperately for the municipal and commercial fleets, with the municipal fishery responsible for `r round(100*(figs12_df$Harvest[99] / figs12_df$Harvest[28]), digits = 1)` in 2012 (Figure 1).
+
+```{r fig1, echo=FALSE, warning=F, message=F, fig.width=6, fig.height=2.5, fig.cap='Annual production (MT) by marine sector in the Philippines from 1980 to 2012'}
+plot(fig1)
+```
+
+Although these regulations ban fishing by the commercial fleet in municipal waters, illegal encroachment is believed to be rampant, with scaled-down commercial vessels, referred to as *'baby trawlers'* operating extensively in municipal waters (Palomares, M. L. D., and D. Pauly, 2010). 
+
+```{r, echo=F, warning=F, message=F, fig.width= 5, fig.height=5}
+
+# Correlation matrix
+# cor_df <- agg_df %>%
+#   select(all_catch, muni_marine_catch, comm_catch, aqua_harvest_all, aqua_value, muni_value, comm_value, muni_price, comm_price, all_price) 
+# 
+# test <- cor(cor_df, use = 'complete.obs')
+# 
+# corrplot(test, addCoef.col = T)
+```
+
+## Materials and Methods
+Data for this analysis comes from several sources. Fishery catch data for both the municipal and commercial sectors was obtained from the CountrySTAT Philippines data portal. These data include time series of catch (MT) and value for 31 species items organized by region and province.

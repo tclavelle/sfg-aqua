@@ -139,7 +139,7 @@ aqua_CommName * AquaProduction + AquaValue * aqua_CommName'
 nz_catch %>%
   split(.$Species_Common_Name) %>%
   map(~ lm(m1_fmla, data = .)) %>%
-  map(plot)
+  map(summary)
 
 # Run model on fish price
 m2_fmla <- 'Price ~  est_catch_weight + AquaProduction + aqua_CommName'
