@@ -1,0 +1,27 @@
+---
+output: pdf_document
+---
+
+# Proposal: Mapping Global Marine Aquaculture
+##### By: The Sustainable Fisheries Group and Benioff Ocean Initiative, University of California, Santa Barbara
+
+Marine aquaculture, known as mariculture, is an efficient food source containing high quality protein as well as essential fats, vitamins, and minerals. Furthermore, mariculture is an important form of employment, especially in developing countries, and the income it generates contributes significantly to sustainable rural livelihoods. The sector continues to grow at an average annual rate of 8% and a recent report by the Food and Agriculture Organization of the United Nations (FAO) emphasized the large global potential for mariculture expansion. Unfortunately, despite mariculture's clear role in global food security, we still lack basic spatial knowledge about the sector and no global map of farm-scale mariculture currently exists. Additionally, publicly available datasets, such as from the Sentinel 2 satellites, may not be sufficient for such an analysis (Figure 1). However, the University of California, Santa Barbara's (UCSB) Sustainable Fisheries Group (SFG) and Benioff Ocean Initiative believe that, by partnering with Digital Globe, we can produce such a map. By leveraging Digital Globe’s cutting edge satellite imagery and data products (Figure 2), UCSB is confident that we can design an accurate and reproducible methodology for mapping global mariculture at the farm level. There is growing interest in improving the spatial resolution of mariculture statistics, and recent studies have demonstrated remote sensing's promise for monitoring mariculture and for validating existing databases of production. This information is fundamental to improving our understanding of mariculture's productivity and interactions with wild fisheries and the environment, as well as critical for our ability to understand where production should be expanded and where it should be restrained. Producing a global map of marine aquaculture would be a major achievement that could dramatically improve the ability for researchers and managers to study and steward this important use of marine space.
+
+### Proposed Approach
+Our proposed approach to this project involves a combination of aquaculture suitability modeling, crowd-sourced image analysis, verification of identified farm sites, and machine learning. The overall goal is to compile a data set and shapefile of verified aquaculture farms. Ideally, this data set would then be used to train machine learning algorithms to detect new or overlooked farms in satellite images. If successful, this algorithm could be used to monitor the expansion, estimate productivity, and observe the environmental conditions of aquaculture farms at the global level moving forward. The primary deliverables of this project will be a global shapefile (and/or raster) of marine aquaculture farms and an academic publication describing the methodology, results, and implications. The data product could be made publicly available and, if efforts to develop a machine learning algorithm are successful, the aquaculture data layer could by automatically updated.
+
+##### Project Steps:
+
+1. UCSB conducts a mariculture suitability analysis to narrow down the area over which to manually search for existing farms
+
+2. UCSB oversees a crowd-sourcing campaign to identify existing farms within the suitable area determined in step 1
+
+3. Identified farms are cross-referenced with data on farm location provided by FAO and other management bodies
+
+4. Where possible, data on farm location is supplemented with information on species, farm type (e.g. floating pen, cage, mussel line, etc), productivity, and other useful variables
+
+5. Input data set of all identified farms as a “training” data set for machine learning algorithms to assist with future identification (and possibly classification) of aquaculture globally
+
+![Aquaculture in Hanja-Ri, South Korea. Image from Sentinel 2 satellite. Resolution 10 meters.](korea_aqua_sentinel.png)
+
+![Aquaculture in Hanja-Ri, South Korea. Digital Globe image obtained from Google Earth. Resolution < 1 meter.](korea_aqua_dg.jpg)

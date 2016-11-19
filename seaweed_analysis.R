@@ -11,10 +11,10 @@ library(ggplot2)
 library(scales)
 
 # Read data
-aqua <- tbl_df(read.csv(file = '~/Google Drive/Project Data/fao-data/FAO Aquaculture Data Final.csv', stringsAsFactors = F)) %>%
+aqua <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/FAO Aquaculture Data Final.csv', stringsAsFactors = F)) %>%
   filter(FoodCat != 'Other')
 
-fish <- tbl_df(read.csv(file = '~/Google Drive/Project Data/fao-data/fao_capture_50to14.csv', stringsAsFactors = F))
+fish <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/fao_capture_50to14.csv', stringsAsFactors = F))
 
 # Scatter plot theme
 scatterTheme <- theme_bw() + theme(axis.text=element_text(size=12),
@@ -28,6 +28,14 @@ scatterTheme <- theme_bw() + theme(axis.text=element_text(size=12),
 # Calculate production of different Food types
 aqua_totals <- aqua %>%
   group_by(FoodCat, Year) %>%
+  summarize(total_prod  = sum(AquaProduction, na.rm = T),
+            total_value = sum(AquaValue, na.rm = T)) %>%
+  ungroup()
+
+# Calculate production by Country
+aqua_totals_cntry <- aqua %>%
+  filter(Year == max(Year, na.rm = T)) %>%
+  group_by(Country, Year) %>%
   summarize(total_prod  = sum(AquaProduction, na.rm = T),
             total_value = sum(AquaValue, na.rm = T)) %>%
   ungroup()
@@ -127,7 +135,7 @@ seaweed %>%
   theme(legend.key = element_blank(),
         legend.position = 'bottom')
 
-ggsave(filename = 'country_species_seaweed.pdf', width = 10, height = 5)
+# ggsave(filename = 'country_species_seaweed.pdf', width = 10, height = 5)
 
 data_frame(years         = c(2000, 2005, 2010, 2012, 2013, 2014),
                       China_fishers = c(9213, 8389, 9013, 9226, 9090, 9036),
@@ -144,4 +152,4 @@ data_frame(years         = c(2000, 2005, 2010, 2012, 2013, 2014),
   scatterTheme +
   theme(legend.key = element_blank())
 
-ggsave(filename = 'country_employment.pdf', width = 6, height = 7)
+# ggsave(filename = 'country_employment.pdf', width = 6, height = 7)
