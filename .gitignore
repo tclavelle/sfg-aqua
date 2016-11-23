@@ -1,6 +1,6 @@
 .Rproj.user
 .Rhistory
-.RData
+*.RData
 .Ruserdata
 .DS_Store
 *.pdf
@@ -9,3 +9,4 @@
 *.jpg
 *.docx
 *.html
+*china_examples.xlsx
