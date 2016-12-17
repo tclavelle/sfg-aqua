@@ -1,17 +1,31 @@
 library(tidyverse)
 library(maps)
+library(xlsx)
 
 load(file = 'sfg-aqua-data/china-data/2008_china_translated.Rdata')
 
 # search for tables with desired word
 lapply(ch1_trans, function(x) {
-  unique(grepl('price', x, ignore.case = T))
+  unique(grepl('mariculture production', x, ignore.case = T))
 })
+# 21, 22, 58, 75, 78, 79, 80, 86, 88
+gfw <- ch1_trans[c(21, 22, 58, 75, 78, 79, 80, 86, 88)]
+
+# Save boat data to excel workbook
+wb <- createWorkbook()  
+for(i in seq_along(gfw))
+{
+  message("Creating sheet", i)
+  sheet <- createSheet(wb, sheetName = paste('sheet', i, sep = ' '))
+  message("Adding data frame", i)
+  addDataFrame(gfw[[i]], sheet)
+}
+saveWorkbook(wb, "sfg-aqua-data/china-data/China_vessel_data.xlsx") 
 
 
-boats <- ch1_trans[[75]]
+boats <- ch1_trans[[22]]
 summary <- ch1_trans[[116]]
-aqua <- ch1_trans[[66]]
+aqua <- ch1_trans[[38]]
 fisher <- ch1_trans[[92]]
 species <- ch1_trans[[33]]
 
