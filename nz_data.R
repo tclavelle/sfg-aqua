@@ -133,7 +133,7 @@ nz_catch <- nz_catch %>%
 
 # Define model formula
 m1_fmla <- 'log(est_catch_weight) ~ Statistical_Area_Code + aqua_CommName + AquaProduction + AquaValue + 
-aqua_CommName * AquaProduction + AquaValue * aqua_CommName'
+aqua_CommName * AquaProduction + aqua_CommName * AquaValue'
   
 # Apply model to scallop and snapper catch series
 nz_catch %>%

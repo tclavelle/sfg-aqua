@@ -1,48 +1,48 @@
+##################################################
+## Project: China 
+## Script purpose: Explore China data to find key datasets
+## Date:
+## Author: Tyler Clavelle
+##################################################
+
+# Load packages
 library(tidyverse)
-library(maps)
 library(xlsx)
 
-load(file = 'sfg-aqua-data/china-data/2008_china_translated.Rdata')
+# What year do you want to explore?
+yr <- 2008 # change this variable as desired
 
-# search for tables with desired word
+# Load Rdata object to explore. The file path is relative to the location of this Rscript - if the data object is in the same
+# folder as this script you can simply put the name of the file. 
+load(file = paste(yr,'_china_translated.Rdata', sep = ''))
+
+
+# search for tables with desired word by using lapply to search for the word in each list element
 lapply(ch1_trans, function(x) {
-  unique(grepl('mariculture production', x, ignore.case = T))
+  unique(grepl('mariculture', x, ignore.case = T))
 })
-# 21, 22, 58, 75, 78, 79, 80, 86, 88
-gfw <- ch1_trans[c(21, 22, 58, 75, 78, 79, 80, 86, 88)]
 
-# Save boat data to excel workbook
-wb <- createWorkbook()  
-for(i in seq_along(gfw))
+# after finding tables of interest create a vector of the list element numbers of the datasets you would like to extract
+dfs_needed <- c(1,2,3,4,5) # just using 1-5 as an example
+
+# create vector of all list elements for writing the entire R object to an Excel workbook
+all_dfs <- c(1:length(ch1_trans))
+
+## Section: Save data to excel workbook
+##################################################
+
+# Create empty workbook
+wb <- createWorkbook() 
+
+# create a worksheet in the workbook for each data table of interest
+for(i in seq_along(all_dfs)) # currently set to write workbook of all tables. Change to dfs_needed if desired
 {
   message("Creating sheet", i)
   sheet <- createSheet(wb, sheetName = paste('sheet', i, sep = ' '))
   message("Adding data frame", i)
-  addDataFrame(gfw[[i]], sheet)
+  addDataFrame(ch1_trans[[i]], sheet) 
 }
-saveWorkbook(wb, "sfg-aqua-data/china-data/China_vessel_data.xlsx") 
 
+saveWorkbook(wb, paste('China_data_',yr, '.xlsx', sep = '')) # save workbook for year 
 
-boats <- ch1_trans[[22]]
-summary <- ch1_trans[[116]]
-aqua <- ch1_trans[[38]]
-fisher <- ch1_trans[[92]]
-species <- ch1_trans[[33]]
-
-
-write_csv(data.frame(boats), path = 'sfg-aqua-data/china-data/china_example_boats.csv')
-write_csv(data.frame(summary), path = 'sfg-aqua-data/china-data/china_example_production.csv')
-write_csv(data.frame(aqua), path = 'sfg-aqua-data/china-data/china_example_aquaculture.csv')
-write_csv(data.frame(fisher), path = 'sfg-aqua-data/china-data/china_example_fishermen.csv')
-write_csv(data.frame(species), path = 'sfg-aqua-data/china-data/china_example_species.csv')
-
-places <- tbl1[4:33,1]
-
-coord_df <- data_frame(location = places,
-                       lat      = NA,
-                       long     = NA)
-
-write_csv(coord_df, path = 'sfg-aqua-data/china-data/china_coordinates.csv')
-
-world.cities[grepl(places, world.cities$name, ignore.case = T),]
 

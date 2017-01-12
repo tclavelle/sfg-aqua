@@ -3,10 +3,10 @@ title: "Philippines Regressions"
 author: "Tyler Clavelle"
 date: "August 24, 2016"
 output:
-  pdf_document:
-    fig_caption: yes
   html_notebook: default
   html_document: default
+  pdf_document:
+    fig_caption: yes
 ---
 
 ```{r data_load, echo = F, warning=F, message=F, error=FALSE}
@@ -167,25 +167,30 @@ Data for this analysis comes from several sources. Fishery catch data for both t
 
 ### Results
 
-```{r, echo=F, warning=F, message=F, fig.width= 6.5, fig.height=6.5, fig.cap='Correlation matrix of regression variables. Numbers represent correlation coefficients'}
-
-# Correlation matrix
-cor_df <- agg_df %>%
-  select(all_catch, muni_marine_catch, comm_catch, aqua_harvest_all, aqua_value, muni_value, comm_value, muni_price, comm_price, all_price)
-
-test <- cor(cor_df, use = 'complete.obs')
-
-corrplot(test, addCoef.col = T, tl.cex = 1, number.cex = 1)
-```
-
-
 ```{r, eval=T, echo=F, message=F, warning=F}
 
-## Regression variables
-# Model 1 - run model across all species
-m1 <- lm(log(muni_marine_catch) ~ aqua_harvest_all + culture_type + province_name + aqua_harvest_all*culture_type, data = agg_df)
+### Regression variables
 
-# summary(m1)
+## Model 1 - run model on aggregate municipal harvest across all aquaculture species for the 1996-2012 data
+m1_fmla <- 'log(muni_marine_catch) ~ aqua_harvest + culture_type + province_name + aqua_harvest*culture_type + aqua_price*culture_type'
+
+agg_df <- agg_df %>%
+  filter(is.na(aqua_price)==F & is.infinite(aqua_price)==F)
+
+m1 <- lm(m1_fmla, data = agg_df)
+
+summary(m1)
+
+## Model 2 - run same model but on CountryStat portal data with fishery species broken out 
+# REMAKE DATASET SO MUNICIPAL AND COMMERCIAL HARVESTS ARE SEPARATED!!!
+m1a_fmla <- 'log(fish_harvest) ~ aqua_harvest + culture_type + province_name + aqua_harvest*culture_type + aqua_price*culture_type'
+
+species_df <- species_df %>%
+  filter(is.infinite(aqua_price)==F)
+
+m1a <- lm(m1a_fmla, data = species_df)
+
+summary(m1a)
 
 # # Model 2 - run model on each species
 # # Define model formula
@@ -204,11 +209,11 @@ fits <- species_df %>%
 m1_summary <- fits %>%
   glance(fit)
 
-# fits %>%
-#   tidy(fit)
-# 
-# fits %>%
-#   map(summary)
+fits %>%
+  tidy(fit)
+
+fits %>%
+  map(summary)
 
 ```
 
@@ -219,7 +224,18 @@ stargazer(m1, type = 'latex', omit = c('province_name'), header = F)
 ```
 
 
-```{r, eval=T, echo=F, results='asis', warning=F}
+```{r, eval=F, echo=F, results='asis', warning=F}
 # tbl_1 <- stargazer(m1lm, type = 'html')
 stargazer(fits$fit, type = 'latex', omit = c('province_name'), header = F)
+```
+
+```{r, echo=F, warning=F, message=F, fig.width= 6.5, fig.height=6.5, fig.cap='Correlation matrix of regression variables. Numbers represent correlation coefficients'}
+
+# Correlation matrix
+cor_df <- agg_df %>%
+  select(all_catch, muni_marine_catch, comm_catch, aqua_harvest_all, aqua_value, muni_value, comm_value, muni_price, comm_price, all_price)
+
+test <- cor(cor_df, use = 'complete.obs')
+
+corrplot(test, addCoef.col = T, tl.cex = 1, number.cex = 1)
 ```
