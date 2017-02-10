@@ -10,6 +10,8 @@ output: html_notebook
 ```{r, echo= F, warning=F, message=FALSE}
 library(tidyverse)
 library(stargazer)
+library(RcppRoll)
+library(forcats)
 
 ## Read in FAO aquaculture and capture fishery data
 aqua <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/FAO Aquaculture Data Final.csv', stringsAsFactors = F))
@@ -20,7 +22,8 @@ exvessel <- tbl_df(read.csv(file = '../price-db-sfg/price-db-results/Exvessel Pr
   select(scientific_name, Year, exvessel) %>%
   rename(sci_name = scientific_name, 
          year     = Year)
-## NOTE ## Summarize fishing effort per FAO region on Big Query to include
+
+## NOTE ## Summarize fishing effort per FAO region on Big Query to include in trends/regressions
 
 # Reshape and clean FAO data
 fish <- fish %>%
@@ -30,9 +33,6 @@ fish <- fish %>%
 
 # rename columns
 colnames(fish) <- c('country', 'comm_name', 'sci_name', 'isscaap', 'fao_area', 'fao_code', 'units', 'year', 'catch')
-
-# add exvessel
-fish <- left_join(fish, exvessel)
 
 ```
 
@@ -57,9 +57,9 @@ aqua2 <- aqua2 %>%
   ungroup()
 
 fish2 <- fish %>%
+  filter(!country %in% c('Totals - Quantity (tonnes)', 'Totals - Quantity (number)')) %>%
   group_by(country, year) %>%
-  summarize(catch        = sum(catch, na.rm = T),
-            avg_exvessel = mean(exvessel, na.rm = T)) %>%
+  summarize(catch = sum(catch, na.rm = T)) %>%
   ungroup()
 
 nat_totals <- fish2 %>%
@@ -76,9 +76,149 @@ p1 <- nat_totals %>%
 
 print(p1)
 
+# Linear model of FAO catch against aquaculture harvest and fishery value
+m1 <- lm(log(nat_totals$catch) ~ nat_totals$year + log(nat_totals$aqua_harvest))
 
-m1 <- lm(log(nat_totals$catch) ~ nat_totals$year + log(nat_totals$aqua_harvest) + nat_totals$avg_exvessel)
+```
 
+```{r}
+# Identify largest current aquaculture producers 
+aqua_ranks <- aqua2 %>%
+  filter(year == max(year, na.rm = T)) %>%
+  group_by(year) %>%
+  mutate(global_total = sum(aqua_harvest, na.rm = T),
+         global_value = sum(aqua_value, na.rm = T)) %>%
+  group_by(country) %>%
+  mutate(prod_perc = 100 * aqua_harvest / global_total,
+         value_perc = 100 * aqua_value / global_value) %>%
+  arrange(desc(prod_perc)) %>%
+  ungroup() %>%
+  mutate(prod_rank  = dense_rank(-prod_perc),
+         value_rank = dense_rank(-value_perc)) 
+
+# Identify largest current fishery producers 
+fish_ranks <- fish2 %>%
+  filter(year == 2013) %>%
+  group_by(year) %>%
+  mutate(global_total = sum(catch, na.rm = T)) %>%
+  group_by(country) %>%
+  mutate(fish_prod_perc = 100 * catch / global_total) %>%
+  arrange(desc(fish_prod_perc)) %>%
+  ungroup() %>%
+  mutate(fish_prod_rank  = dense_rank(-fish_prod_perc))
+  
+# Identify countries with fastest growth rate
+aqua_growth <- aqua2 %>%
+  group_by(country) %>%
+  mutate(growth = 100 * (aqua_harvest - lag(aqua_harvest)) / lag(aqua_harvest),
+         five_yr_avg = roll_mean(growth, 5, fill = NA, align = 'right'))
+
+# join data for aquaculture and fishery rank
+ranks_df <- aqua_ranks %>%
+  select(country, aqua_harvest, prod_perc, prod_rank) %>%
+  left_join(fish_ranks %>%
+              select(country, catch, fish_prod_perc, fish_prod_rank)) %>%
+  left_join(aqua_growth %>%
+              filter(year == 2013) %>%
+              select(country, five_yr_avg))
+
+# Find what percentage of global aquaculture and fishery landings the top 20 countries cover
+ranks_df %>%
+  filter(fish_prod_rank <= 20 & country != 'China') %>%
+  summarize(perc       = sum(fish_prod_perc, na.rm = T),
+            aqua_perc  = sum(prod_perc, na.rm = T),
+            med_growth = median(five_yr_avg, na.rm = T))
+# Calculate production per unit EEZ  
+```
+
+# Bubble plot of country aquaculture and fishery production
+```{r plot1, echo=FALSE, warning=FALSE, message=FALSE}
+ranks_df %>%
+  # filter(prod_rank <= 20 & fish_prod_rank <= 20) %>%
+  ggplot(aes(x = prod_rank, y = fish_prod_rank, color = log(five_yr_avg), size = prod_perc)) +
+  geom_point() +
+  coord_cartesian(xlim = c(0,30), ylim = c(0,30)) +
+  geom_abline(slope = 1, intercept = 0) +
+  scale_color_gradient2(low = 'red', high = 'green') +
+  theme_bw()
+```
+
+# Line plot
+```{r}
+ranks_df %>%
+  filter(prod_rank <= 20 & country != 'China') %>%
+  ggplot(aes(x = country, y = prod_perc, size = five_yr_avg)) +
+  geom_point() +
+  coord_flip()
+```
+
+
+```{r}
+ranks_dense <- ranks_df %>%
+  filter(prod_rank <= 20 | fish_prod_rank <= 20) %>%
+  mutate(dominant_sector = 'Equal rank') %>%
+  group_by(country) %>%
+  mutate(net_rank   = prod_rank - fish_prod_rank,
+         mean_rank  = mean(prod_rank, fish_prod_rank, na.rm = T),
+         total_prod = sum(aqua_harvest, catch, na.rm = T),
+         catch_to_aqua = catch / aqua_harvest) %>%
+  ungroup()
+
+ranks_dense$dominant_sector[ranks_dense$net_rank < 0] <- 'Aquaculture'
+ranks_dense$dominant_sector[ranks_dense$net_rank > 0] <- 'Fisheries'
+
+# cap russia's avg growth rate
+ranks_dense$five_yr_avg[ranks_dense$five_yr_avg > 50] <- 50
+
+ranks_dense %>%
+  mutate(country = fct_reorder(country, abs(net_rank), .desc = T)) %>%
+  ggplot(aes(x = country, y = net_rank, fill = dominant_sector, color = dominant_sector)) +#, fill = five_yr_avg)) +
+  geom_bar(color = 'black',stat = 'identity') +
+  geom_point() +
+  coord_flip() +
+  labs(y = 'Net production ranking\n(aquaculture rank - fisheries rank)',
+       x = 'Country',
+       fill = 'Highest ranked\nsector',
+       color = 'Highest ranked\nsector') +
+  theme_bw()
+
+ggsave(filename = 'sfg-aqua-figures/country_production_ranks.pdf', width = 6, height = 5)
+```
+
+```{r}
+aqua_growth %>%
+  filter(country %in% ranks_dense$country[ranks_dense$net_rank >= 0]) %>%
+  filter(year > 1999) %>%
+  ggplot(aes(x = year, y = five_yr_avg)) +
+  geom_line() +
+  geom_hline(yintercept = 0, color = 'red', linetype = 2) +
+  facet_wrap(~country, scales = 'free_y') +
+  labs(x = 'Year',
+       y = 'Aquaculture growth rate\n(five-year rolling average)') +
+  theme_bw() +
+  theme(strip.text = element_text(size = 8))
+
+ggsave(filename = 'sfg-aqua-figures/aqua_growth_rates.pdf', width = 7, height = 5)
+```
+
+
+```{r}
+ranks_dense %>%
+  mutate(country = fct_reorder(country, total_prod, .desc = F)) %>%
+  ggplot(aes(x = country, y = net_rank, fill = dominant_sector, color = dominant_sector)) +#, fill = five_yr_avg)) +
+  geom_bar(color = 'black',stat = 'identity') +
+  geom_point() +
+  coord_flip()
+```
+
+```{r}
+ranks_dense %>%
+  gather('sector','production', c(2,5)) %>%
+  mutate(country = fct_reorder(country, total_prod, .desc = F)) %>%
+  ggplot(aes(x = country, y = production, fill = sector)) +
+  geom_bar(color = 'black',stat = 'identity', position = 'dodge') +
+  # geom_point() +
+  coord_flip()
 ```
 
 
