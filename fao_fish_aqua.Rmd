@@ -12,6 +12,7 @@ library(tidyverse)
 library(stargazer)
 library(RcppRoll)
 library(forcats)
+library(scales)
 
 ## Read in FAO aquaculture and capture fishery data
 aqua <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/FAO Aquaculture Data Final.csv', stringsAsFactors = F))
@@ -23,16 +24,29 @@ exvessel <- tbl_df(read.csv(file = '../price-db-sfg/price-db-results/Exvessel Pr
   rename(sci_name = scientific_name, 
          year     = Year)
 
+export <- read_csv(file = '../../Google Drive/Project Data/fao-data/fao_exports_76to13_long.csv')
+reduction <- read_csv(file = '../price-db-sfg/price-db-linkage-tables/exvessel_tableS3.csv') %>%
+  filter(ISSCAAP_group == 'Fish for reduction')
+
 ## NOTE ## Summarize fishing effort per FAO region on Big Query to include in trends/regressions
 
 # Reshape and clean FAO data
 fish <- fish %>%
   gather('Year',Catch,contains('X'),convert=T) %>%
   mutate(Year  = as.numeric(gsub('X','',Year)),
-         Catch = as.numeric(gsub(pattern = ' F', replacement = '',Catch))) 
+         Catch = as.numeric(gsub(pattern = ' F', replacement = '',Catch))) %>%
+  filter(!`Country..Country.` %in% c('Totals - Quantity (tonnes)', 'Totals - Quantity (number)'))
 
 # rename columns
 colnames(fish) <- c('country', 'comm_name', 'sci_name', 'isscaap', 'fao_area', 'fao_code', 'units', 'year', 'catch')
+
+food_fish <- fish %>%
+  filter(!sci_name %in% c('Engraulis ringens',
+                         'Brevoortia pectinata',
+                         'Brevoortia tyrannus',
+                         'Brevoortia aurea',
+                         'Brevoortia patronus',
+                         'Ethmidium maculatum'))
 
 ```
 
@@ -40,7 +54,7 @@ colnames(fish) <- c('country', 'comm_name', 'sci_name', 'isscaap', 'fao_area', '
 ```{r, echo=F, warning=F, message=F}
 # select certain columns from aquaculture and standardize with fish
 aqua2 <- aqua %>%
-  filter(Type == 'Mariculture') %>%
+  filter(Type == 'Mariculture' & FoodCat == 'Food Fish') %>%
   select(Country, CommName, AreaFAO, Year, AquaProduction, AquaValue) %>%
   rename(country      = Country,
          comm_name    = CommName, 
@@ -57,7 +71,6 @@ aqua2 <- aqua2 %>%
   ungroup()
 
 fish2 <- fish %>%
-  filter(!country %in% c('Totals - Quantity (tonnes)', 'Totals - Quantity (number)')) %>%
   group_by(country, year) %>%
   summarize(catch = sum(catch, na.rm = T)) %>%
   ungroup()
@@ -67,7 +80,7 @@ nat_totals <- fish2 %>%
   filter(year > 2001 & year < 2014)
 
 p1 <- nat_totals %>%
-  ggplot(aes(x = aqua_value, y = catch)) +
+  ggplot(aes(x = aqua_harvest, y = catch)) +
   geom_point(alpha = 0.7) +
   stat_smooth(method = 'lm') +
   scale_y_log10() +
@@ -144,14 +157,6 @@ ranks_df %>%
 ```
 
 # Line plot
-```{r}
-ranks_df %>%
-  filter(prod_rank <= 20 & country != 'China') %>%
-  ggplot(aes(x = country, y = prod_perc, size = five_yr_avg)) +
-  geom_point() +
-  coord_flip()
-```
-
 
 ```{r}
 ranks_dense <- ranks_df %>%
@@ -161,14 +166,15 @@ ranks_dense <- ranks_df %>%
   mutate(net_rank   = prod_rank - fish_prod_rank,
          mean_rank  = mean(prod_rank, fish_prod_rank, na.rm = T),
          total_prod = sum(aqua_harvest, catch, na.rm = T),
-         catch_to_aqua = catch / aqua_harvest) %>%
+         aqua_to_catch = aqua_harvest / catch,
+         net_prod      = aqua_harvest - catch) %>%
   ungroup()
 
 ranks_dense$dominant_sector[ranks_dense$net_rank < 0] <- 'Aquaculture'
 ranks_dense$dominant_sector[ranks_dense$net_rank > 0] <- 'Fisheries'
 
 # cap russia's avg growth rate
-ranks_dense$five_yr_avg[ranks_dense$five_yr_avg > 50] <- 50
+ranks_dense$five_yr_avg[ranks_dense$five_yr_avg > 20] <- 20
 
 ranks_dense %>%
   mutate(country = fct_reorder(country, abs(net_rank), .desc = T)) %>%
@@ -184,6 +190,18 @@ ranks_dense %>%
 
 ggsave(filename = 'sfg-aqua-figures/country_production_ranks.pdf', width = 6, height = 5)
 ```
+
+```{r}
+ranks_dense %>%
+  filter(fish_prod_rank <= 20 & country != 'China') %>%
+  mutate(country = fct_reorder(country, fish_prod_perc)) %>%
+  ggplot(aes(x = country, y = fish_prod_perc, size = prod_perc, color = five_yr_avg)) +
+  geom_point() +
+  scale_size_continuous(breaks = c(0.5,1,1.5,2,2.5,3,3.5,4,4.5,5),range = c(1,10)) +
+  scale_color_gradient(low = 'red', high = 'dark green') +
+  coord_flip()
+```
+
 
 ```{r}
 aqua_growth %>%
@@ -204,11 +222,20 @@ ggsave(filename = 'sfg-aqua-figures/aqua_growth_rates.pdf', width = 7, height = 
 
 ```{r}
 ranks_dense %>%
-  mutate(country = fct_reorder(country, total_prod, .desc = F)) %>%
-  ggplot(aes(x = country, y = net_rank, fill = dominant_sector, color = dominant_sector)) +#, fill = five_yr_avg)) +
+  filter(fish_prod_rank <= 20) %>%
+  mutate(country = fct_reorder(country, aqua_to_catch, .desc = T)) %>%
+  ggplot(aes(x = country, y = aqua_to_catch - 0.34, fill = net_prod)) +
   geom_bar(color = 'black',stat = 'identity') +
-  geom_point() +
-  coord_flip()
+  scale_y_continuous(labels = comma) +
+  scale_fill_gradient2(low = 'red', high = 'dark green', guide = F) +
+  geom_hline(yintercept = 0, color = 'black', linetype = 1) +
+  labs(y = 'Aquaculture deficit (MT)',
+       x = 'Country') +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 65, vjust = 0.5))
+  
+#ggsave(filename = 'sfg-aqua-figures/country_aqua_deficit.pdf', width = 6, height = 5)
+  
 ```
 
 ```{r}
@@ -219,6 +246,10 @@ ranks_dense %>%
   geom_bar(color = 'black',stat = 'identity', position = 'dodge') +
   # geom_point() +
   coord_flip()
+```
+
+```{r}
+sum(ranks_df$aqua_harvest, na.rm = T) / (sum(ranks_df$catch, na.rm = T) + sum(ranks_df$aqua_harvest, na.rm = T))
 ```
 
 
