@@ -1,0 +1,94 @@
+---
+title: "Mariculture & Capture Fisheries"
+output: html_notebook
+---
+
+```{r data_load, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(trelliscope)
+library(mapdata)
+library(countrycode)
+
+fish <- read_csv(file = '../../Google Drive/Project Data/fao-data/fao_capture_50to14_long.csv')
+aqua <- read_csv(file = '../../Google Drive/Project Data/fao-data/fao_aqua_50to14_long.csv')
+cntry_codes <- read_csv(file = '../../Google Drive/Project Data/fao-data/country_codes.csv')
+```
+
+```{r data_prep, echo=FALSE, message=FALSE, warning=FALSE}
+# Summarize marine landings and mariculture production by FAO region
+p1_df <- fish %>%
+  rename(AreaFAO = `Fishing area (FAO major fishing area)`) %>%
+  group_by(year, AreaFAO) %>%
+  summarize(Fisheries = sum(quantity, na.rm = T)) %>%
+  left_join(aqua %>%
+              filter(Type == 'Mariculture') %>%
+              rename(year = Year) %>%
+              group_by(year, AreaFAO) %>%
+              summarize(Mariculture = sum(AquaProduction, na.rm = T))) %>%
+  gather(key = sector, value = production, 3:4) %>%
+  ungroup()
+
+# Find FAO areas with zero mariculture production
+mari_areas <- p1_df %>%
+  filter(year == 2013 & production > 0 & sector == 'Mariculture') %>% {
+    unique(.$AreaFAO)
+  }
+```
+
+```{r}
+# global plot
+p2_df <- fish %>%
+  filter(`Species (ISSCAAP group)` != 'Herrings, sardines, anchovies') %>%
+  rename(AreaFAO = `Fishing area (FAO major fishing area)`) %>%
+  group_by(year) %>%
+  summarize(Fisheries = sum(quantity, na.rm = T)) %>%
+  left_join(aqua %>%
+              filter(FoodCat == 'Food Fish') %>%
+              rename(year = Year) %>%
+              group_by(year, Type) %>%
+              summarize(Aquaculture = sum(AquaProduction, na.rm = T)) %>%
+              spread(Type, Aquaculture)) %>%
+  gather(key = sector, value = production, 2:4) %>%
+  ungroup()
+
+ggplot(p2_df, aes(x = year, y = production/1e6, color = sector)) +
+  geom_line(size = 1.5) +
+  scale_color_manual(values = c('black', 'lightgreen', 'darkgreen')) +
+  labs(x = 'Year',
+       y = 'Production (million metric tons)',
+       color = 'Sector') +
+  theme_bw() +
+  theme(legend.key = element_blank(),
+        legend.position = 'bottom')
+
+ggsave(filename = 'sfg-aqua-figures/dhc_production_by_source.png', width = 5, height = 4)
+```
+
+
+```{r plot_1, echo=FALSE, message=FALSE, warning=FALSE, fig.width=6, fig.height=6}
+
+ggplot(subset(p1_df, AreaFAO %in% mari_areas), aes(x = year, y = log10(production), color = sector)) +
+  geom_line() +
+  facet_wrap(~AreaFAO, nrow = 5) +
+  scale_color_manual(values = c('blue', 'darkgreen')) +
+  labs(x = 'Year',
+       y = 'Production (log metric tons)',
+       color = 'Sector') +
+  theme_bw() +
+  theme(legend.key = element_blank(),
+        legend.position = 'bottom')
+
+ggsave(filename = 'sfg-aqua-figures/fishery_aqua_FAOregions.png', height = 6, width = 5)
+```
+
+```{r world_map1}
+world <- map_data(map = 'world')
+
+
+
+unique(fish$`Country (Country)`)[!unique(fish$`Country (Country)`) %in% unique(world$region)]
+
+ggplot(world, aes(long, lat)) +
+  geom_polygon(aes(group = group))
+```
+
