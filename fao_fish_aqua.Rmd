@@ -116,19 +116,6 @@ nat_totals <- fish2 %>%
   left_join(aqua2) %>%
   filter(year > 2001 & year < 2014)
 
-p1 <- nat_totals %>%
-  ggplot(aes(x = aqua_harvest, y = catch)) +
-  geom_point(alpha = 0.7) +
-  stat_smooth(method = 'lm') +
-  scale_y_log10() +
-  scale_x_log10() +
-  facet_wrap(~year, ncol = 4)
-
-# print(p1)
-
-# Linear model of FAO catch against aquaculture harvest and fishery value
-# m1 <- lm(log(nat_totals$catch) ~ nat_totals$year + log(nat_totals$aqua_harvest))
-
 ```
 
 ```{r}
@@ -330,27 +317,40 @@ isscaap_comps <- aqua %>%
          year         = Year,
          aqua_harvest = AquaProduction,
          aqua_value   = AquaValue) %>%
-  group_by(year, fao_area, comm_name, isscaap) %>%
+  group_by(year, country, fao_area, comm_name, isscaap) %>%
   summarize(aqua_harvest = sum(aqua_harvest, na.rm = T)) %>%
   ungroup() %>%
     left_join(fish %>%
-              select(year, fao_area, comm_name, isscaap, catch) %>%
-              group_by(year,  fao_area, comm_name, isscaap) %>%
+              select(year, country, fao_area, comm_name, isscaap, catch) %>%
+              group_by(year, country,  fao_area, comm_name, isscaap) %>%
               summarize(catch = sum(catch,na.rm = T))) %>%
-  filter(year == 2013 & is.na(catch)==F)
+  filter(is.na(catch)==F & !grepl('nei', comm_name))
 
 
 
 isscaap_comps %>%
-  filter(aqua_harvest > 0 & catch > 0 & !grepl('nei', comm_name)) %>%
-  ggplot(aes(x = catch, y = aqua_harvest, fill = isscaap)) +
-  geom_point() +
+  filter(year == 2013 & aqua_harvest > 0 & catch > 0 ) %>%
+  ggplot(aes(x = catch, y = aqua_harvest, color = isscaap)) +
+  geom_point(alpha = 0.6) +
   scale_y_log10(labels = comma) +
   scale_x_log10(labels = comma) +
   guides(color = F) +
   coord_cartesian(xlim = c(.01,1.5e7), ylim = c(.01,1.5e7)) +
   geom_abline(intercept = 0, slope = 1, linetype = 2) +
   theme_bw()
+```
+
+```{r}
+isscaap_comps %>%
+  filter(year >2007) %>%
+  group_by(isscaap, comm_name) %>%
+  mutate(ratio = aqua_harvest / catch) %>%
+  # summarize(ratio = median(ratio)) %>%
+  ggplot(aes(x = fct_reorder(isscaap, aqua_harvest), y = ratio, fill = isscaap)) +
+  geom_boxplot() +
+  guides(fill = F) +
+  coord_cartesian(ylim = c(0,40)) +
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
 
@@ -392,7 +392,7 @@ bar_fig_1 %>%
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
   
-ggsave(filename = 'sfg-aqua-figures/country_aqua_growth.png', width = 6, height = 5)
+# ggsave(filename = 'sfg-aqua-figures/country_aqua_growth.png', width = 6, height = 5)
   
 ```
 

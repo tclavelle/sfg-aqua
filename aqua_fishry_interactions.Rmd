@@ -1,0 +1,138 @@
+---
+title: "Aquaculture Fisheries Market Interactions"
+output: html_notebook
+---
+
+
+```{r, echo= F, warning=F, message=FALSE}
+library(tidyverse)
+library(stargazer)
+library(RcppRoll)
+library(forcats)
+library(scales)
+library(countrycode)
+library(mapdata)
+library(viridis)
+
+## Economic data and linkage tables from Melnychuk et al
+exvessel <- tbl_df(read.csv(file = '../price-db-sfg/price-db-results/Exvessel Price Database.csv', stringsAsFactors = F)) %>%
+  select(scientific_name, Year, exvessel) %>%
+  rename(sci_name = scientific_name, 
+         year     = Year)
+
+econ <- read_csv(file = '../price-db-sfg/price-db-linkage-tables/exvessel_tableS3.csv') %>%
+  select(-ISSCAAP_division) %>%
+  rename(comm_name = ASFIS_species,
+         sci_name  = scientific_name,
+         isscaap   = ISSCAAP_group)
+
+## Read in FAO aquaculture and capture fishery data
+aqua <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/FAO Aquaculture Data Final.csv', stringsAsFactors = F)) %>%
+  filter(Enviro %in% c('Marine', 'Brackishwater') & FoodCat == 'Food Fish' & !grepl('Inland', AreaFAO)) %>%
+  select(Country, CommName, SpeciesCatName, AreaFAO, Year, AquaProduction, AquaValue) %>%
+  rename(country      = Country,
+         comm_name    = CommName,
+         isscaap      = SpeciesCatName,
+         fao_area     = AreaFAO,
+         year         = Year,
+         aqua_harvest = AquaProduction,
+         aqua_value   = AquaValue) %>%
+  left_join(econ)
+
+fish <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/fao_capture_50to14.csv', na.strings = c('...','0 0','-'), stringsAsFactors = F))
+
+
+# Reshape and clean FAO data
+fish <- fish %>%
+  gather('Year',Catch,contains('X'),convert=T) %>%
+  mutate(Year  = as.numeric(gsub('X','',Year)),
+         Catch = as.numeric(gsub(pattern = ' F', replacement = '',Catch))) %>%
+  filter(!`Country..Country.` %in% c('Totals - Quantity (tonnes)', 'Totals - Quantity (number)'))
+
+# rename columns
+colnames(fish) <- c('country', 'comm_name', 'sci_name', 'isscaap', 'fao_area', 'fao_code', 'units', 'year', 'catch')
+
+fish <- left_join(fish, econ)
+
+```
+
+```{r}
+# Identify countries with fastest growth rate
+aqua_growth <- aqua %>%
+  group_by(pooled_commodity) %>%
+  mutate(growth = 100 * (aqua_harvest - lag(aqua_harvest)) / lag(aqua_harvest),
+         five_yr_avg = roll_mean(growth, 5, fill = NA, align = 'right'))
+```
+
+
+```{r}
+# Summarize aquaculture and fisheries by pooled commodity
+isscaap_comps <- aqua %>%
+  group_by(year, country, fao_area, pooled_commodity, isscaap) %>%
+  summarize(aqua_harvest = sum(aqua_harvest, na.rm = T)) %>%
+  ungroup() %>%
+    left_join(fish %>%
+              select(year, country, fao_area, pooled_commodity, isscaap, catch) %>%
+              group_by(year, country,  fao_area, pooled_commodity, isscaap) %>%
+              summarize(catch = sum(catch,na.rm = T))) %>%
+  filter(is.na(catch)==F & !grepl('nei', pooled_commodity))
+
+# Summarize aquaculture and fisheries by comm_name
+sp_comps <- aqua %>%
+  group_by(year, country, fao_area, comm_name, isscaap) %>%
+  summarize(aqua_harvest = sum(aqua_harvest, na.rm = T)) %>%
+  ungroup() %>%
+    left_join(fish %>%
+              select(year, country, fao_area, comm_name, isscaap, catch) %>%
+              group_by(year, country,  fao_area, comm_name, isscaap) %>%
+              summarize(catch = sum(catch,na.rm = T))) %>%
+  filter(is.na(catch)==F & !grepl('nei', comm_name))
+
+# Extract interesting points to label on plot
+p1_labels <- sp_comps %>%
+  filter(year == 2013 & aqua_harvest > 0 & catch > 0 ) %>%
+  filter(row_number(desc(aqua_harvest))==1 | row_number(desc(catch))==1)
+```
+
+```{r}
+# Scatter plot of pooled commodity production 
+sp_comps %>%
+  filter(year == 2013 & aqua_harvest > 0 & catch > 0 ) %>%
+  ggplot(aes(x = catch, y = aqua_harvest)) +
+  geom_point(alpha = 0.6) +
+  geom_abline(intercept = 0, slope = 1, linetype = 2) +
+  geom_point(data = p1_labels, size = 3, shape = 1, color = 'red') +
+  geom_label(data = p1_labels, aes(label = paste(country, comm_name, sep = ":\n")), nudge_y = 0.7, nudge_x = -0.2, size = 3) +
+  scale_y_log10(labels = comma) +
+  scale_x_log10(labels = comma) +
+  labs(x = 'Fisheries catch (MT)',
+       y = 'Mariculture harvest (MT)') +
+  coord_cartesian(xlim = c(.01,1.5e7), ylim = c(.01,1.5e7)) +
+  theme_bw()
+
+ggsave(filename = 'sfg-aqua-figures/catch_aqua_scatter.pdf', width = 4.5, height = 4)
+```
+
+```{r}
+isscaap_comps %>%
+  left_join(aqua_growth) %>%
+  filter(year >2007 & aqua_harvest > 0 & catch > 0) %>%
+  group_by(isscaap, pooled_commodity) %>%
+  mutate(diff = log10(catch) - log10(aqua_harvest)) %>%
+  group_by(isscaap) %>%
+  mutate(rate = median(five_yr_avg, na.rm = T),
+         rate = ifelse(rate > 50, 50, rate),
+         n    = length(pooled_commodity)) %>%
+  ggplot(aes(x = fct_reorder(isscaap, -diff), y = diff, fill = rate)) +
+  geom_boxplot() +
+  scale_fill_gradientn(colors = viridis(256), limits = c(-10, 50), labels = c('-10%','0%','10%','20%','30%','40%','+50%')) +
+  geom_hline(yintercept = 0, linetype = 2, color = 'red') +
+  coord_flip() +
+  labs(y = 'Capture production (log MT) - Mariculture production (log MT)',
+       x = NULL,
+       fill = '5 year\ngrowth rate\n(median)') +
+  theme_bw() 
+
+ggsave(filename = 'sfg-aqua-figures/catch_aqua_boxplot.pdf', width = 6, height = 4)
+```
+

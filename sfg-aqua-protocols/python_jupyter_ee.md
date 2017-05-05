@@ -25,3 +25,5 @@ Docker command for launching Earth Engine container with local volume mounted:
 ```
 Tyler-SFG$ docker run -d -p 8888:8888 -v /Users/Tyler-SFG/Desktop/notebooks:/home/jovyan/work tylere/docker-debian-python3-scipy-notebook
 ```
+
+**EE Authorization Code** - 4/tpXn4CQN9yYWEJ4GbOgsPInAyafyYyk470iJ7OvStGA

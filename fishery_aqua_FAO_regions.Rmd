@@ -82,9 +82,7 @@ ggsave(filename = 'sfg-aqua-figures/fishery_aqua_FAOregions.png', height = 6, wi
 ```
 
 ```{r world_map1}
-world <- map_data(map = 'world')
-
-
+world <- map_data(map = 'world2')
 
 unique(fish$`Country (Country)`)[!unique(fish$`Country (Country)`) %in% unique(world$region)]
 
