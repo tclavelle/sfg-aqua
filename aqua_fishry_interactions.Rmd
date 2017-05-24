@@ -13,6 +13,7 @@ library(scales)
 library(countrycode)
 library(mapdata)
 library(viridis)
+library(treemap)
 
 ## Economic data and linkage tables from Melnychuk et al
 exvessel <- tbl_df(read.csv(file = '../price-db-sfg/price-db-results/Exvessel Price Database.csv', stringsAsFactors = F)) %>%
@@ -52,7 +53,9 @@ fish <- fish %>%
 # rename columns
 colnames(fish) <- c('country', 'comm_name', 'sci_name', 'isscaap', 'fao_area', 'fao_code', 'units', 'year', 'catch')
 
-fish <- left_join(fish, econ)
+fish <- left_join(fish, econ) %>%
+  left_join(exvessel) %>%
+  mutate(value = catch * exvessel)
 
 ```
 
@@ -69,23 +72,27 @@ aqua_growth <- aqua %>%
 # Summarize aquaculture and fisheries by pooled commodity
 isscaap_comps <- aqua %>%
   group_by(year, country, fao_area, pooled_commodity, isscaap) %>%
-  summarize(aqua_harvest = sum(aqua_harvest, na.rm = T)) %>%
+  summarize(aqua_harvest = sum(aqua_harvest, na.rm = T),
+            aqua_value   = sum(aqua_value, na.rm =T)) %>%
   ungroup() %>%
     left_join(fish %>%
-              select(year, country, fao_area, pooled_commodity, isscaap, catch) %>%
+              select(year, country, fao_area, pooled_commodity, isscaap, catch, value) %>%
               group_by(year, country,  fao_area, pooled_commodity, isscaap) %>%
-              summarize(catch = sum(catch,na.rm = T))) %>%
+              summarize(catch = sum(catch, na.rm = T),
+                        value = sum(value, na.rm = T))) %>%
   filter(is.na(catch)==F & !grepl('nei', pooled_commodity))
 
 # Summarize aquaculture and fisheries by comm_name
 sp_comps <- aqua %>%
   group_by(year, country, fao_area, comm_name, isscaap) %>%
-  summarize(aqua_harvest = sum(aqua_harvest, na.rm = T)) %>%
+  summarize(aqua_harvest = sum(aqua_harvest, na.rm = T),
+            aqua_value   = sum(aqua_value, na.rm =T)) %>%
   ungroup() %>%
     left_join(fish %>%
-              select(year, country, fao_area, comm_name, isscaap, catch) %>%
+              select(year, country, fao_area, comm_name, isscaap, catch, value) %>%
               group_by(year, country,  fao_area, comm_name, isscaap) %>%
-              summarize(catch = sum(catch,na.rm = T))) %>%
+              summarize(catch = sum(catch,na.rm = T),
+                        value = sum(value, na.rm = T))) %>%
   filter(is.na(catch)==F & !grepl('nei', comm_name))
 
 # Extract interesting points to label on plot
@@ -110,8 +117,28 @@ sp_comps %>%
   coord_cartesian(xlim = c(.01,1.5e7), ylim = c(.01,1.5e7)) +
   theme_bw()
 
-ggsave(filename = 'sfg-aqua-figures/catch_aqua_scatter.pdf', width = 4.5, height = 4)
+#ggsave(filename = 'sfg-aqua-figures/catch_aqua_scatter.pdf', width = 4.5, height = 4)
 ```
+
+```{r}
+# Scatter plot of pooled commodity production 
+sp_comps %>%
+  filter(year == 2010 & aqua_harvest > 0 & catch > 0 ) %>%
+  ggplot(aes(x = aqua_value, y = value)) +
+  geom_point(alpha = 0.6) +
+  geom_abline(intercept = 0, slope = 1, linetype = 2) +
+  # geom_point(data = p1_labels, size = 3, shape = 1, color = 'red') +
+  # geom_label(data = p1_labels, aes(label = paste(country, comm_name, sep = ":\n")), nudge_y = 0.7, nudge_x = -0.2, size = 3) +
+  scale_y_log10(labels = comma) +
+  scale_x_log10(labels = comma) +
+  # labs(x = 'Fisheries catch (MT)',
+  #      y = 'Mariculture harvest (MT)') +
+  # coord_cartesian(xlim = c(.01,1.5e7), ylim = c(.01,1.5e7)) +
+  theme_bw()
+
+#ggsave(filename = 'sfg-aqua-figures/catch_aqua_scatter.pdf', width = 4.5, height = 4)
+```
+
 
 ```{r}
 isscaap_comps %>%
@@ -133,6 +160,20 @@ isscaap_comps %>%
        fill = '5 year\ngrowth rate\n(median)') +
   theme_bw() 
 
-ggsave(filename = 'sfg-aqua-figures/catch_aqua_boxplot.pdf', width = 6, height = 4)
+#ggsave(filename = 'sfg-aqua-figures/catch_aqua_boxplot.pdf', width = 6, height = 4)
+```
+
+
+```{r}
+isscaap_comps %>%
+  filter(year > 1995 & aqua_harvest > 0 & catch > 0) %>%
+  mutate(production_ratio = aqua_harvest / catch,
+         value_ratio      = aqua_value / value) %>%
+  group_by(year, pooled_commodity) %>%
+  summarize(production_ratio = median(production_ratio, na.rm = T),
+            value_ratio      = median(value_ratio, na.rm = T)) %>%
+  ggplot(aes(x = as.factor(year), y = production_ratio)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0,20))
 ```
 
