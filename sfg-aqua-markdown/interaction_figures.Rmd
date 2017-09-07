@@ -5,12 +5,11 @@ output: html_notebook
 
 ```{r}
 library(tidyverse)
-library(treemap)
 library(scales)
 library(forcats)
 library(gridExtra)
 library(readxl)
-library(cowplot)
+
 # Aquaculture data
 aqua <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/FAO Aquaculture Data Final.csv', stringsAsFactors = F)) %>%
   # filter(Enviro %in% c('Marine', 'Brackishwater') & !grepl('Inland', AreaFAO)) %>%
@@ -33,6 +32,18 @@ fish <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/fao_cap
   mutate(Year  = as.numeric(gsub('X','',Year)),
          Catch = as.numeric(gsub(pattern = ' F', replacement = '',Catch))) %>%
   filter(!`Country..Country.` %in% c('Totals - Quantity (tonnes)', 'Totals - Quantity (number)'))
+
+# Commodities data
+commods <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/Commodity_quantity_76to13.csv', na.strings = c('...','0 0', '-'), stringsAsFactors = FALSE)) %>%
+                    gather('year','quantity',contains('X'),convert=T) %>%
+                    mutate(year     = as.numeric(gsub('X','',year)),
+                           quantity = as.numeric(quantity)) %>%
+  rename(isscaap   = `Commodity..ISSCAAP.group.`,
+         commodity = `Commodity..Commodity.` )
+                  
+commod_value <- read_csv(file = '../../Google Drive/Project Data/fao-data/Commodity_value_76to13.csv')
+
+
 
 # rename columns
 colnames(fish) <- c('country', 'comm_name', 'sci_name', 'isscaap', 'fao_area', 'fao_code', 'units', 'year', 'catch')
@@ -70,49 +81,54 @@ unfed <- c("Brown seaweeds","Clams, cockles, arkshells","Green seaweeds",
 ```{r}
 p3 <- aqua %>%
   filter(FoodCat == 'Food Fish' & year > 1975) %>%
-  mutate(type = ifelse(enviro %in% c('Marine', 'Brackishwater'), 'mariculture','freshwater')) %>%
+  mutate(type = ifelse(enviro %in% c('Marine', 'Brackishwater'), 'Mariculture','Freshwater')) %>%
   group_by(type,isscaap,type,year) %>%
   summarize(production = sum(aqua_harvest, na.rm = T)) %>%
   filter(production > 0) %>%
   bind_rows(fish %>%
               filter(isscaap %in% .$isscaap & year >1975) %>%
-              mutate(type = 'fisheries') %>%
+              mutate(type = 'Fisheries') %>%
               group_by(type,isscaap,year) %>%
               summarize(production = sum(catch, na.rm = T))) %>%
   spread(type, production) %>%
   group_by(isscaap) %>%
-  filter(all(is.na(mariculture))==F) %>%
+  filter(all(is.na(Mariculture))==F) %>%
   gather(type, production, 3:5)
 ```
 
 Make two panel plot of mariculture production
 ```{r}
-p3A <- p3 %>%
-  filter(year %in% c(1994:2013)) %>%
-  filter(type != 'freshwater') %>% # comment out to remove freshwater 
-  filter(isscaap %in% c("Abalones, winkles, conchs",
+p3 %>%
+  filter(year %in% c(1980:2013)) %>%
+  filter(type != 'Freshwater' & isscaap %in% isscaap_touse) %>% # comment out to remove freshwater 
+  ungroup() %>%
+  mutate(category = ifelse(isscaap %in% c("Abalones, winkles, conchs",
                         "Clams, cockles, arkshells",
                         "Oysters",
                         "Mussels",
-                        "Shrimps, prawns",
                         "Scallops, pectens",
                         "Miscellaneous marine molluscs",
-                        "Squids, cuttlefishes, octopuses")) %>%
+                        "Squids, cuttlefishes, octopuses"), 'Bivalves and molluscs', 'Marine finfish'),
+         category = ifelse(isscaap %in% c("Shrimps, prawns"), 'Shrimps, prawns', category),
+         category = ifelse(isscaap %in% c("Salmons, trouts, smelts", "Miscellaneous diadromous fishes"),
+                           'Salmon and misc. diadromous fishes', category)) %>%
+  group_by(category, type, year) %>%
+  summarize(production = sum(production, na.rm = T)) %>%
   ggplot(aes(x = year, y = production/1e6, fill = type)) +
   geom_area() +
   scale_y_continuous(labels = comma) +
   scale_fill_brewer(palette = 'Set1') +
-  guides(fill = F) +
-  facet_wrap(~isscaap, ncol = 4) +
+  facet_wrap(~category, nrow = 2) + 
   labs(y = 'Production (MMT)',
        x = 'Year',
-       title = 'A') +
+       fill = 'Sector') +
   theme_bw() +
-  theme(title = element_text(size = 14),
-        axis.title = element_text(size = 8),
-        text = element_text(size = 8))
+  theme(axis.title = element_text(size = 8),
+        text = element_text(size = 8),
+        legend.position = 'bottom',
+        legend.title = element_text(size = 8))
 
-# ggsave(filename = 'sfg-aqua-figures/sector_areas_1.pdf', width = 6, height = 4)
+ggsave(filename = 'sfg-aqua-figures/figure_1_production.pdf', width = 5, height = 4.75)
 ```
 
 ```{r}
@@ -143,10 +159,27 @@ p3B <- p3 %>%
         legend.title = element_text(size = 8),
         text = element_text(size = 8))
 
-p3_final <- grid.arrange(p3A, p3B)
+# p3_final <- grid.arrange(p3A, p3B)
 
 #ggsave(p3_final,filename = 'sfg-aqua-figures/sector_areas.pdf', width = 6, height = 8)
 ```
+
+## Examine number of Commodities Per ISSCAAP group
+```{r}
+commods_per_isscaap <- commods %>%
+  filter(is.na(quantity)==F & isscaap %in% isscaap_touse) %>%
+  ungroup() %>%
+  mutate(isscaap = fct_relevel(isscaap, isscaap_touse)) %>%
+  group_by(isscaap, year) %>%
+  summarize(number_commods = length(unique(commodity))) %>%
+  ungroup()
+  
+ggplot(commods_per_isscaap, aes(x = year, y = number_commods, color = isscaap)) +
+  geom_line() +
+  guides(color = F) +
+  facet_wrap(~isscaap, scales = 'free', nrow = 7, dir = 'v')
+```
+
 
 
 ## Market Figure Methods
@@ -156,10 +189,13 @@ p3_final <- grid.arrange(p3A, p3B)
 # Summarize aqua data by isscaap and year
 aqua_pc <- aqua %>%
   filter(year > 1975) %>%
-  group_by(isscaap,year) %>%
+  filter(FoodCat == 'Food Fish' & year > 1975) %>%
+  mutate(type = ifelse(enviro %in% c('Marine', 'Brackishwater'), 'Mariculture','Freshwater')) %>%
+  group_by(isscaap, type, year) %>%
   summarize(aqua_harvest = sum(aqua_harvest, na.rm = T),
             aqua_value   = sum(aqua_value, na.rm = T),
-            aqua_price   = 1000 * aqua_value / aqua_harvest)
+            aqua_price   = 1000 * aqua_value / aqua_harvest) %>%
+  left_join(commods_per_isscaap)
 ```
 
 2. Join summarized aquaculture and exvessel data and filter out commodities with no aquaculture harvest
@@ -169,24 +205,113 @@ comp <- exvessel %>%
   left_join(aqua_pc)
 ```
 
+Run correlation test of mariculture and capture fisheries prices by ISSCAAP group
+```{r}
+price_cors <- comp %>%
+  filter(isscaap %in% isscaap_touse & type == 'Mariculture') %>%
+  group_by(isscaap) %>%
+  summarize(price_cor = round(cor(exvessel, aqua_price),digits = 2),
+            number_commods = mean(number_commods, na.rm = T))
+
+price_cors %>%
+  ggplot(aes(x = fct_reorder(isscaap, price_cor), y = price_cor, fill = price_cor)) +
+  geom_label(aes(label = price_cor), size = 3) +
+  scale_fill_gradient2(high = muted('green')) +
+  geom_hline(yintercept = 0, linetype = 2, color = 'red') +
+  guides(fill = F) +
+  labs(y = 'Price Correlation Coefficient',
+       x = 'ISSCAAP Species Group') +
+  coord_flip() +
+  theme_bw() +
+  theme(axis.title = element_text(size = 10),
+        text = element_text(size = 10))
+
+# ggsave(filename = 'sfg-aqua-figures/price_correlations.pdf', width = 6, height = 4)
+```
+
+
+Plot average exvessel price against number of commodities and aquaculture species.
+```{r}
+comp %>%
+  filter(isscaap %in% isscaap_touse & type == 'Mariculture') %>%
+  group_by(isscaap) %>%
+  mutate(scaled_exvessel = exvessel / exvessel[year == min(year, na.rm = T)]) %>%
+  ggplot(aes(x = year, y = scaled_exvessel)) +
+  geom_line() +
+  # geom_point(aes(size = aqua_harvest), alpha = 0.6) +
+  geom_hline(yintercept = 1, linetype = 2, color = 'red') +
+  facet_wrap(~isscaap)
+```
+
+
 3. Plot average exvessel and ISSCAAP price over time by sector
-```{r, fig.height=8, fig.width=6}
-p4A <- comp %>%
-  filter(isscaap %in% isscaap_touse) %>%
+```{r}
+market_fig <- comp %>%
+  # filter(isscaap %in% isscaap_touse) %>%
+  filter(type == 'Mariculture') %>%
+  filter(isscaap %in% c('Shrimps, prawns', 'Salmons, trouts, smelts')) %>%
   group_by(isscaap, year) %>%
   summarize(aqua = mean(aqua_price, na.rm = T),
             fish = mean(exvessel, na.rm = T)) %>%
   gather(metric, value, 3:4) %>%
-  ggplot(aes(x = year, y = value, color = fct_rev(metric))) +
-  geom_line() +
-  scale_y_continuous(labels = comma) +
+  ungroup() %>%
+  mutate(isscaap = fct_relevel(isscaap, isscaap_touse))
+
+
+price_cors <- price_cors %>%
+  filter(isscaap %in% c('Shrimps, prawns', 'Salmons, trouts, smelts')) %>%
+  mutate(year = 2006,
+         number_commods = round(number_commods)) %>%
+         # isscaap = fct_relevel(isscaap, isscaap_touse)) %>%
+  left_join(market_fig %>%
+              group_by(isscaap) %>%
+              summarize(axis_range = .15*max(value, na.rm = T)))
+
+
+  ggplot(market_fig, aes(x = year)) +
+  geom_label(data = price_cors, aes(x = 1998, y = axis_range , label = paste('Corr: ',price_cor,'\n', 'Commodities: ', number_commods), fill = price_cor), size = 2) +
+  geom_line(aes(y = value, color = fct_rev(metric))) +
+  scale_y_continuous(labels = comma, limits = c(0,NA)) +
+  scale_fill_gradient2(high = 'lightgreen') +
   scale_color_brewer(palette = 'Set1') +
-  facet_wrap(~isscaap, scales = 'free_y', ncol = 3) + 
+  guides(fill = F) +
+  facet_wrap(~isscaap, scales = 'free_y', ncol = 3, dir = 'v') + 
+  labs(x = 'Year',
+       y = 'Price ($US/MT)',
+       color = 'Sector') +
   theme_bw() +
-  theme(axis.title = element_text(size = 8),
-        legend.title = element_text(size = 8),
-        text = element_text(size = 8))
+  theme(axis.title = element_text(size = 10),
+        legend.title = element_text(size = 10),
+        text = element_text(size = 10),
+        legend.position = 'bottom')
+  
+# ggsave(filename = 'sfg-aqua-figures/price_trends.pdf', width = 7, height = 8)  
 ```
+
+
+```{r}
+comp %>%
+  filter(isscaap %in% isscaap_touse & type == 'Mariculture') %>%
+  group_by(year) %>%
+  summarize(aqua = mean(aqua_price, na.rm = T),
+            Fisheries = mean(exvessel, na.rm = T)) %>%
+  gather(metric, value, 2:3) %>%
+  ungroup() %>%
+  ggplot(aes(x = year, y = value, color = metric)) +
+  geom_line() +
+    labs(x = 'Year',
+       y = 'Price ($US/MT)',
+       color = 'Sector') +
+  scale_y_continuous(labels = comma) +
+  theme_bw() +
+  theme(axis.title = element_text(size = 10),
+        legend.title = element_text(size = 10),
+        text = element_text(size = 10),
+        legend.position = 'bottom')
+  
+```
+
+
 
 4. Align production and price plots for same species
 
@@ -226,7 +351,7 @@ p4B <- comp %>%
 
 p4 <- grid.arrange(p4A, p4B, ncol = 2, widths = c(2.75,3.25))
 
-ggsave(p4, filename = 'sfg-aqua-figures/production_price_plots4.png', height = 8, width = 6)
+# ggsave(p4, filename = 'sfg-aqua-figures/production_price_plots4.png', height = 8, width = 6)
 
 ```
 
@@ -269,3 +394,4 @@ p5 <- grid.arrange(p5A, p5B, ncol = 2, widths = c(2.75,3.25))
 ggsave(p5, filename = 'sfg-aqua-figures/production_price_plots5.png', height = 8, width = 6)
 
 ```
+

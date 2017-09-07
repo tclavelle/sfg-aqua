@@ -31,6 +31,7 @@ subgraph cluster0 {
       node [fillcolor = LightSeaGreen, label = 'Shellfish']
       d
 }
+
       node [fillcolor = orange, label = 'Wild\npopulation', shape = square]
       f
       node [fillcolor = orange, label = 'Habitat /\necosystem', shape = square]
@@ -46,9 +47,9 @@ subgraph cluster0 {
       {c d} -> f
       edge [color = Salmon, label = 'habitat modification', fontcolor = Salmon]
       {a b c d} -> g
-      edge [color = Salmon, label = 'water quality', fontcolor = Salmon]
+      edge [color = Salmon, label = 'water quality (-)', fontcolor = Salmon]
       {b c} -> g
-      edge [color = Salmon, label = 'water quality', fontcolor = Salmon]
+      edge [color = Salmon, label = 'water quality (+)', fontcolor = Salmon]
       {d} -> g
       edge [color = Salmon, label = 'genetic fitness', fontcolor = Salmon]
       {c d} -> f
@@ -62,9 +63,9 @@ subgraph cluster0 {
       edge [color = SteelBlue, label = 'exclusion', fontcolor = SteelBlue]
       c -> a [ltail = cluster0]
       edge [color = SteelBlue, label = 'de facto MPA', fontcolor = SteelBlue]
-      {c d} -> f
+      {c d} -> f [ltail = cluster0]
       edge [color = SteelBlue, label = 'FAD', fontcolor = SteelBlue]
-      {c d} -> a
+      {c d} -> a [ltail = cluster0]
 ## Market Interaction Edges
       edge [color = DarkMagenta, label = 'price competition', fontcolor = DarkMagenta]
       c -> a [ltail = cluster0]
