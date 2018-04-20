@@ -17,22 +17,22 @@ library(countrycode)
 library(mapdata)
 
 ## Read in FAO aquaculture and capture fishery data
-aqua <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/FAO Aquaculture Data Final.csv', stringsAsFactors = F))
+aqua <- tbl_df(read.csv(file = '../../../Google Drive/Project Data/fao-data/FAO Aquaculture Data Final.csv', stringsAsFactors = F))
 
-fish <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/fao_capture_50to14.csv', na.strings = c('...','0 0','-'), stringsAsFactors = F))
+fish <- tbl_df(read.csv(file = '../../../Google Drive/Project Data/fao-data/fao_capture_50to14.csv', na.strings = c('...','0 0','-'), stringsAsFactors = F))
 
-cntry_codes <- read_csv(file = '../../Google Drive/Project Data/fao-data/country_codes.csv')
+cntry_codes <- read_csv(file = '../../../Google Drive/Project Data/fao-data/country_codes.csv')
 
 # fix column names
 colnames(cntry_codes) <- c('country','official_name', 'ISO3', 'ISO2','UNI', 'UNDP','FAOSTAT', 'GAUL')
 
-exvessel <- tbl_df(read.csv(file = '../price-db-sfg/price-db-results/Exvessel Price Database.csv', stringsAsFactors = F)) %>%
+exvessel <- tbl_df(read.csv(file = '../../price-db-sfg/price-db-results/Exvessel Price Database.csv', stringsAsFactors = F)) %>%
   select(scientific_name, Year, exvessel) %>%
   rename(sci_name = scientific_name, 
          year     = Year)
 
-export <- read_csv(file = '../../Google Drive/Project Data/fao-data/fao_exports_76to13_long.csv')
-reduction <- read_csv(file = '../price-db-sfg/price-db-linkage-tables/exvessel_tableS3.csv') %>%
+export <- read_csv(file = '../../../Google Drive/Project Data/fao-data/fao_exports_76to13_long.csv')
+reduction <- read_csv(file = '../../price-db-sfg/price-db-linkage-tables/exvessel_tableS3.csv') %>%
   filter(ISSCAAP_group == 'Fish for reduction')
 
 # Reshape and clean FAO data
@@ -230,6 +230,28 @@ all_aqua_growth %>%
   theme(strip.text = element_text(size = 8))
 
 # ggsave(filename = 'sfg-aqua-figures/aqua_growth_rates.png', width = 7, height = 5)
+```
+## China
+```{r}
+fish2 %>%
+  filter(country == 'China') %>%
+  filter(year > 1979) %>%
+  mutate(sector = 'Fisheries') %>%
+  rename(production = catch) %>%
+  bind_rows(all_aqua_growth %>%
+              filter(country == 'China' & year > 1979) %>%
+              select(country, year, sector, aqua_harvest) %>%
+              rename(production = aqua_harvest)) %>%
+  # gather(key = 'sector', value = 'production', 3:5) %>%
+  ggplot(aes(x = year, y = production, color = sector)) +
+  geom_line() +
+  scale_y_continuous(labels = comma) +
+  labs(x = 'Year',
+       y = 'Production (MT)') +
+  theme_bw() +
+  theme(strip.text = element_text(size = 8))
+
+# ggsave(filename = '../sfg-aqua-figures/china_sector_growth.png', width = 7, height = 5)
 ```
 
 ### Map of higher growth rates (inland vs. mariculture)

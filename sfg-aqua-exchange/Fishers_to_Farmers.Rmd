@@ -3,31 +3,26 @@ title: "Fishers to (Fish) Farmers"
 author: "Tyler Clavelle"
 date: "August 17, 2016"
 output:
-  html_document: default
   html_notebook: default
-  pdf_document: default
 ---
 
 ```{r, echo=F}
+# Libraries
+library(tidyverse)
 
-library(dplyr)
-library(tidyr)
-library(purrr)
-library(ggplot2)
-
-source(file = 'aqua_functions.R')
+source(file = '../sfg-aqua-scripts/aqua_functions.R')
 
 # Initial parameters to use
-r = 1.5
-p = 850
-c = 20
-q = 0.0001
-Kmax = 1000
-B = 500
-phi = 0.5
-A = 300
-E = 10000
-delta = 0.1
+r <- 1.5
+p <- 850
+c <- 20
+q <- 0.0001
+Kmax <- 1000
+B <- 500
+phi <- 0.5
+A <- 300
+E <- 10000
+delta <- 0.1
 
 ```
 
@@ -35,12 +30,11 @@ delta = 0.1
 # Introduction
 Most of the world’s small-scale fisheries are overfished and this threatens biodiversity, livelihoods, and food security. A key challenge is reducing fishing pressure, but this becomes complicated as fishermen resist, or are ill equipped, for alternative livelihoods. Expanding sustainable aquaculture is a viable alternative.
 
-
 # Model
 
 The following model of the competitive interaction between aquaculture and wild fisheries is adapted from Hoagland *et al.* (2003).
 
-### Wild Fishery
+## Wild Fishery
 A traditional production function is used to model the catch of a wild capture fishery:
 
 \[ h_f = qBE \]
@@ -62,6 +56,11 @@ The total costs of fishing are modeled as an increasing linear function of fishi
 $$
 \dot{B}[K(A)] = \frac{K(A)}{4} \left\{\left(\frac{c}{pqK(A)} + 1 - \frac{\delta}{r} \right) + \left[\left(\frac{c}{pqK(A)} + 1 - \frac{\delta}{r}\right)^2 + \frac{8c\delta}{pqrK(A)} \right]^\frac{1}{2} \right\}
 $$
+
+```{r}
+
+```
+
 
 The stock size, $K(A)$, also governs the value of fishing quota, $m$ as follows:
 

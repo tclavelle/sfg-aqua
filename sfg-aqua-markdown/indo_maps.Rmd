@@ -1,0 +1,141 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r, echo=FALSE, message=F}
+library(tidyverse)
+library(sf)
+library(viridis)
+library(scales)
+
+# Read shapefile
+indo <- st_read(dsn = "../../Shapefiles/IDN_adm_shp/", layer = "IDN_adm1")
+# Production and area data
+aqua <- read_csv(file = "sfg-aqua-data/indo-data/indo_aqua_stats.csv", na = c("-"))
+# Simplify shapefile
+indo <- st_simplify(indo, dTolerance = 0.01)
+```
+
+
+```{r}
+# Process data into long format
+aqua <- aqua %>% 
+  gather(key = 'year', value = 'value', 4:ncol(.)) %>% 
+  spread(metric, value) %>% 
+  mutate(area_hectares = as.numeric(gsub('\\.', '', area_hectares)),
+         tons          = as.numeric(gsub('\\.', '', tons)),
+         tons_per_ha   = tons / area_hectares,
+         NAME_1 = factor(province))
+```
+
+Calculate summary statistics to use for maps
+
+```{r}
+# Area of brackish water ponds
+area_map <- aqua %>% 
+  dplyr::filter(year == 2015 & type == 'brackish pond') %>% 
+  select(NAME_1, area_hectares) 
+# Intensity of production
+intensity_map <- aqua %>% 
+  dplyr::filter(year == 2015 & type == 'brackish pond') %>% 
+  select(NAME_1, tons_per_ha) %>% 
+  mutate(tons_per_ha = ifelse(tons_per_ha > 1000, NA, tons_per_ha))
+# Area of brackish water ponds
+prod_map <- aqua %>% 
+  dplyr::filter(year == 2015 & type == 'brackish pond') %>% 
+  select(NAME_1, tons)
+
+# Rate of intensity change
+perc_change_map <- aqua %>% 
+  dplyr::filter(type == 'brackish pond') %>% 
+  group_by(province) %>% 
+  mutate(perc_change_i  = tons_per_ha / lag(tons_per_ha),
+         three_yr_avg_i   = RcppRoll::roll_meanr(perc_change_i, n = 3, na.rm = T),
+         perc_change_a  = area_hectares / lag(area_hectares),
+         three_yr_avg_a   = RcppRoll::roll_meanr(perc_change_a, n = 3, na.rm = T)) %>% 
+  mutate(three_yr_avg_i = ifelse(three_yr_avg_i > 200, 200, three_yr_avg_i),
+         three_yr_avg_a = ifelse(three_yr_avg_a > 100, 100, three_yr_avg_a)) %>% 
+  dplyr::filter(year == 2015)
+
+# Join subsets to map data
+area_map <- left_join(indo, area_map)
+tons_map <- left_join(indo, prod_map)
+intensity_map <- left_join(indo, intensity_map)
+perc_change_map <- left_join(indo, perc_change_map)
+```
+
+```{r}
+ggplot(area_map) +
+  geom_sf(aes(key = NAME_1, fill = area_hectares)) +
+  scale_fill_viridis(option = "D", labels = comma) +
+  guides(fill = guide_colorbar(barwidth = 20,
+                               barheight = 0.5,
+                               title = "Hectares",
+                               title.position = "top")) +
+  labs(title = "Area of brackish water pond aquaculture in 2015") +
+  theme_minimal() +
+  theme(legend.position = 'bottom')
+
+ggsave(filename = "sfg-aqua-figures/indo_brackish_area.png", width = 8, height = 6)
+```
+
+```{r}
+ggplot(tons_map) +
+  geom_sf(aes(key = NAME_1, fill = tons)) +
+  scale_fill_viridis(option = "D", labels = comma) +
+  guides(fill = guide_colorbar(barwidth = 20,
+                               barheight = 0.5,
+                               title = "Tons",
+                               title.position = "top")) +
+  labs(title = "Production from brackish water pond aquaculture in 2015") +
+  theme_minimal() +
+  theme(legend.position = 'bottom')
+
+ggsave(filename = "sfg-aqua-figures/indo_brackish_area.png", width = 8, height = 6)
+```
+
+```{r}
+ggplot(intensity_map) +
+  geom_sf(aes(fill = tons_per_ha)) +
+  scale_fill_viridis(breaks = seq(from = 0, to = 40, by = 5), option = "D") +
+  guides(fill = guide_colorbar(barwidth = 20,
+                               barheight = 0.5,
+                               title = "Tons per hectare",
+                               title.position = "top")) +
+  labs(title = "Intensity of brackish water pond aquaculture in 2015") +
+  theme_minimal() +
+  theme(legend.position = 'bottom')
+  
+ggsave(filename = "sfg-aqua-figures/indo_brackish_intensity.png", width = 8, height = 6)
+```
+
+```{r}
+ggplot(perc_change_map) +
+  geom_sf(aes(fill = three_yr_avg_a)) +
+  scale_fill_viridis(option = "C") +
+  guides(fill = guide_colorbar(barwidth = 20,
+                               barheight = 0.5,
+                               title = "% change (3 yr average)",
+                               title.position = "top")) +
+  labs(title = "Extensification rate of brackish water pond aquaculture") +
+  theme_minimal() +
+  theme(legend.position = 'bottom')
+  
+ggsave(filename = "sfg-aqua-figures/indo_brackish_perc_change_area.png", width = 8, height = 6)
+```
+
+```{r}
+ggplot(perc_change_map) +
+  geom_sf(aes(fill = three_yr_avg_i)) +
+  scale_fill_viridis(option = "C") +
+  guides(fill = guide_colorbar(barwidth = 20,
+                               barheight = 0.5,
+                               title = "% change (3 yr average)",
+                               title.position = "top")) +
+  labs(title = "Intensification rate of brackish water pond aquaculture") +
+  theme_minimal() +
+  theme(legend.position = 'bottom')
+  
+ggsave(filename = "sfg-aqua-figures/indo_brackish_perc_change_area.png", width = 8, height = 6)
+```

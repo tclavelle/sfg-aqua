@@ -28,13 +28,15 @@ fisheryHarvest <- function(q, B, E) {
   return(h_f)
 }
 
-stockGrowth <- function(r, B, Kmax, phi, A, q, E) {
-  B_out <- r * B * (1 -  B / (Kmax - phi * A)) - (q * B * E)
+# Equation 3
+stockGrowth <- function(r, B, k, phi, A, harvest) {
+  B_out <- r * B * (1 -  B / k) - harvest
   return(B_out)
 }
 
-optimalStock <- function(K, c, p, delta, r) {
-  B_star <- K / 4 * ((c/(p*q*K) + 1 - delta/r) + ((c/(p*q*K) + 1 - delta/r)^2 + (8*c*delta) / (p*q*r*K))^0.5)
+# Equation 4 
+optimalStock <- function(Kmax, c, p, delta, r, phi, A, k) {
+  B_star <- k / 4 * ((c/(p*q*k) + 1 - delta/r) + ((c/(p*q*k) + 1 - delta/r)^2 + (8*c*delta) / (p*q*r*k))^0.5)
   return(B_star)
 }
 

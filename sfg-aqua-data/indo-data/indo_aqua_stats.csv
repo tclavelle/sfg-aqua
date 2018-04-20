@@ -1,0 +1,421 @@
+﻿province,type,metric,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015
+Aceh,marine culture,area_hectares,-,1,-,-,1,1,1,2,1,3,4
+Sumatera Utara,marine culture,area_hectares,0,-,30,30,15,13,13,13,18,18,20
+Sumatera Barat,marine culture,area_hectares,7,3,7,4,1,16,3,2,3,3,3
+Riau,marine culture,area_hectares,3,3,324,2,-,0,0,0,0,10,30
+Kepulauan Riau,marine culture,area_hectares,-,-,-,-,-,-,-,2,-,−,
+Jambi,marine culture,area_hectares,-,-,-,0,2,3,-,100,-,−,−
+Sumatera Selatan,marine culture,area_hectares,-,-,-,-,-,-,75,175,5,5,5
+Kepulauan Bangka Belitung,marine culture,area_hectares,2,36,39,27,0,1.212,1.289,2.439,785,783,783
+Bengkulu,marine culture,area_hectares,28,1,1,2,20,98,179,742,77,53,10
+Lampung,marine culture,area_hectares,36,101,1.059,93,135,2.107,2.213,-,2.605,3.832,3.865
+DKI Jakarta,marine culture,area_hectares,1,83,84,54,60,65,61,18,24,21,101
+Jawa Barat,marine culture,area_hectares,4,437,774,411,26,24,46,757,157,30,23
+Banten,marine culture,area_hectares,11,100,270,325,328,55,55,-,55,55,22
+Jawa Tengah,marine culture,area_hectares,-,-,-,-,-,-,-,29,-,−,0
+DI Yogyakarta,marine culture,area_hectares,41,75,84,134,1.138,1.138,1.535,78,134.832,129.518,130.63
+Jawa Timur,marine culture,area_hectares,5,99,71,47,33,520,459,55,835,861,862
+Bali,marine culture,area_hectares,403,788,619,730,730,742,780,801,997,458,533
+Nusa Tenggara Barat,marine culture,area_hectares,255,1.9,5.827,2.106,2.279,13.056,15.661,19.903,15.622,16.904,13.444
+Nusa Tenggara Timur,marine culture,area_hectares,300,5.866,7.822,4.893,5.206,6.16,6.481,6.854,9.796,10.776,11.014
+Kalimantan Barat,marine culture,area_hectares,0,42,24,25,8,1,0,2,2,1,1
+Kalimantan Tengah,marine culture,area_hectares,-,-,4,4,22,25,10,15,5,15,15
+Kalimantan Selatan,marine culture,area_hectares,968,272,259,161,161,123,123,123,123,224,224
+Kalimantan Timur,marine culture,area_hectares,26,90,492,266,378,4.909,6.503,6.318,7.661,8.285,1.953
+Kalimantan Utara,marine culture,area_hectares,,,,,,,,,,,2.145
+Sulawesi Utara,marine culture,area_hectares,125,125,78,82,818,956,1.352,1.574,2.859,1.588,1.68
+Gorontalo,marine culture,area_hectares,828,3.47,4.012,4.26,9.946,15.345,18.698,1.559,24.369,24.574,31.564
+Sulawesi Tengah,marine culture,area_hectares,59.061,59.239,60.11,61.268,14.347,26.453,36.283,26.951,41.534,44.822,48.088
+Sulawesi Selatan,marine culture,area_hectares,149,605,731,11.491,4.838,24.667,26.748,35.094,27.268,26.928,12.975
+Sulawesi Barat,marine culture,area_hectares,24,484,577,438,987,989,941,19.945,533,435,343
+Sulawesi Tenggara,marine culture,area_hectares,-,218,319,642,708,840,1.459,519,1.551,1.91,2.476
+Maluku,marine culture,area_hectares,30,319,315,133,129,16.256,46.464,49.985,51.977,7.382,17.125
+Maluku Utara,marine culture,area_hectares,296,85,96,116,150,1.522,1.514,2.106,1.267,1.194,3.618
+Papua,marine culture,area_hectares,-,-,250,-,64,159,316,19,843,767,1.952
+Papua Barat,marine culture,area_hectares,26,102,203,46,146,194,30,751,20,20,20
+Indonesia,marine culture,area_hectares,62.629,74.543,84.481,87.79,42.676,117.649,169.292,176.93,325.825,281.477,285.527
+Aceh,brackish pond,area_hectares,40.292,36.724,34.078,40.921,50.254,51.519,49.271,51.696,50.527,50.541,45.999
+Sumatera Utara,brackish pond,area_hectares,8.143,6.551,8.091,8.664,8.69,4.547,4.791,4.665,4.499,4.499,5.177
+Sumatera Barat,brackish pond,area_hectares,7,8,11,12.374,13,17,17,13,13,13,19
+Riau,brackish pond,area_hectares,1.929,1.413,1.637,2.917,789,1.624,964,525,429,498,587
+Kepulauan Riau,brackish pond,area_hectares,1.46,1.297,1.186,1.199,1.499,1.499,1.487,29.836,324,324,405
+Jambi,brackish pond,area_hectares,23,22.341,28.903,29.912,47.185,33.151,29.836,320,29.838,30.667,26.073
+Sumatera Selatan,brackish pond,area_hectares,465,372,395,465,396,339,348,219,322,339,335
+Kepulauan Bangka Belitung,brackish pond,area_hectares,50.181,19.85,21.601,36.498,35.304,35.158,37.963,53,38.063,37.985,37.912
+Bengkulu,brackish pond,area_hectares,186,102,129,165,226,142,214,23.819,147,147,132
+Lampung,brackish pond,area_hectares,-,-,50,16.271,18,48,48,324,1.007,76,77
+DKI Jakarta,brackish pond,area_hectares,207,150,296,335,339,487,487,487,364,364,487
+Jawa Barat,brackish pond,area_hectares,44.353,45.939,53.637,51.829,54.465,64.133,65.326,10.125,64.997,64.265,57.735
+Banten,brackish pond,area_hectares,38.911,26.807,32.677,43.415,39.822,38.815,39.025,23,30.227,45.025,41.117
+Jawa Tengah,brackish pond,area_hectares,50,120,35,40,69,13,14,59.154,66,4.915,149
+DI Yogyakarta,brackish pond,area_hectares,60.951,48.655,51.609,57.512,50.229,60.649,59.577,64.815,51.287,51.195,51.778
+Jawa Timur,brackish pond,area_hectares,10.455,6.186,8.644,23.357,11.125,9.119,8.71,41.712,10.358,10.358,10.399
+Bali,brackish pond,area_hectares,564,392,443,273,291,290,532,263,282,209,199
+Nusa Tenggara Barat,brackish pond,area_hectares,6.584,5.555,6.477,6.096,7.629,6.987,7.154,6.772,7.357,7.495,7.617
+Nusa Tenggara Timur,brackish pond,area_hectares,1.779,3.807,5.11,4.008,998,1.238,1.249,1.311,1.138,1.149,1.01
+Kalimantan Barat,brackish pond,area_hectares,12.263,4.384,7.312,10.215,17.532,18.839,18.839,18.839,19.559,19.147,10.516
+Kalimantan Tengah,brackish pond,area_hectares,1.872,23.802,804,6.369,1.279,3.415,4.78,5.217,5.142,5.977,6.156
+Kalimantan Selatan,brackish pond,area_hectares,8.351,8.258,9.397,13.174,14.21,13.724,14.758,14.758,16.714,17.032,17.032
+Kalimantan Timur,brackish pond,area_hectares,49.72,96.611,51.967,103.625,180.068,175.345,249.176,169.298,163.182,153.833,113.053
+Kalimantan Utara,brackish pond,area_hectares,,,,,,,,,,,78.805
+Sulawesi Utara,brackish pond,area_hectares,61,41,71,120,135,202,190,66,299,299,299
+Gorontalo,brackish pond,area_hectares,10.403,8.272,10.373,10.384,11.398,9.28,9.299,12.505,8.04,8.586,8.263
+Sulawesi Tengah,brackish pond,area_hectares,106.593,87.455,93.959,103.097,101.952,105.859,107.312,19.628,107.557,109.832,109.561
+Sulawesi Selatan,brackish pond,area_hectares,25.135,12.712,12.26,15.424,15.589,22.226,20.551,106.842,20.285,19.783,23.795
+Sulawesi Barat,brackish pond,area_hectares,2.093,1.576,302,1.484,3.572,3.511,4.535,8.283,4.975,7.645,7.801
+Sulawesi Tenggara,brackish pond,area_hectares,-,13.6,9.459,8.151,12.626,11.765,11.79,4.575,12.368,13.739,15.061
+Maluku,brackish pond,area_hectares,2.365,724,726,1.135,1.135,8.19,275,400,396,226,477
+Maluku Utara,brackish pond,area_hectares,3.553,76,259,3.253,51,37,34,109,53,64,43
+Papua,brackish pond,area_hectares,-,362,120,-,75,84,80,597,93,95,37.014
+Papua Barat,brackish pond,area_hectares,598,2.84,885,494,776,606,589,98,601,764,761
+Indonesia,brackish pond,area_hectares,512.524,486.982,452.901,613.175,682.725,682.857,749.22,657.346,650.509,667.083,715.846
+Aceh,freshwater pond,area_hectares,2.588,2.626,3.069,3.391,3.587,3.706,3.49,2.378,3.5,3.501,3.133
+Sumatera Utara,freshwater pond,area_hectares,6.417,1,5.25,5.94,4.519,8.497,6.419,6.553,6.775,7.77,8.425
+Sumatera Barat,freshwater pond,area_hectares,6.277,5.74,7.786,63.73,10.428,10.464,10.52,12.226,12.612,12.9,13.899
+Riau,freshwater pond,area_hectares,1.866,2.218,2.404,3.497,18.559,5.222,5.373,2.584,2.828,2.952,2.97
+Kepulauan Riau,freshwater pond,area_hectares,1.454,901,1.01,1.035,1.384,1.542,1.706,17.208,2.341,1.851,2.314
+Jambi,freshwater pond,area_hectares,8.421,7.856,10.19,10.055,10.578,12.933,13.964,2.637,16.891,16.89,25.794
+Sumatera Selatan,freshwater pond,area_hectares,3.019,1.246,1.104,212,3.196,4.017,5.373,120,3.044,3.286,6.325
+Kepulauan Bangka Belitung,freshwater pond,area_hectares,6.247,5.683,6.01,10.028,7.691,8.682,13.59,4.428,13.366,13.751,16.438
+Bengkulu,freshwater pond,area_hectares,104,37,33,87,155,146,186,13.26,117,82,53
+Lampung,freshwater pond,area_hectares,10,72,110,22.352,98.055,189,3.117,2.546,4.978,5.165,5.385
+DKI Jakarta,freshwater pond,area_hectares,117,101,99,118,125,96,93,28,25,21,93
+Jawa Barat,freshwater pond,area_hectares,41.609,21.123,23.832,19.928,51.529,30.597,20.547,1.535,20.433,20.776,22.986
+Banten,freshwater pond,area_hectares,3.332,6.406,18.213,68.912,1.912,3.52,3.261,888,4.085,4.7,9.245
+Jawa Tengah,freshwater pond,area_hectares,750,1.815,780,1.067,1.11,781,960,3.36,1.008,876,1.119
+DI Yogyakarta,freshwater pond,area_hectares,2.379,1.6,1.669,2.13,2,20.281,3.399,20.496,39.08,16.204,16.517
+Jawa Timur,freshwater pond,area_hectares,1.479,1.194,1.274,1.874,1.617,1.244,1.426,4.668,1.667,1.665,1.674
+Bali,freshwater pond,area_hectares,526,432,498,496,470,937,796,763,1.203,1.154,997
+Nusa Tenggara Barat,freshwater pond,area_hectares,6.45,6.826,4.637,4.637,8.689,2.277,3.377,2.629,2.875,2.946,2.882
+Nusa Tenggara Timur,freshwater pond,area_hectares,1.012,984,1.221,304,304,175,161,283,326,473,688
+Kalimantan Barat,freshwater pond,area_hectares,2.887,1.722,1.3,2.539,22.183,5.231,5.276,6.128,7.353,6.758,7.086
+Kalimantan Tengah,freshwater pond,area_hectares,325,269,228,359,380,790,989,1.21,1.434,1.523,1.63
+Kalimantan Selatan,freshwater pond,area_hectares,629,534,512,545,517,550,479,721,1.381,1.375,1.396
+Kalimantan Timur,freshwater pond,area_hectares,561,4.077,4.847,6.366,5.965,4.839,2.299,2.405,2.469,8.916,8.34
+Kalimantan Utara,freshwater pond,area_hectares,,,,,,,,,,,206
+Sulawesi Utara,freshwater pond,area_hectares,1.937,285,2.101,2.377,4.908,4.893,7.587,7.385,7.72,9.264,9.264
+Gorontalo,freshwater pond,area_hectares,1.395,1.138,1.428,1.401,1.668,1.693,2.152,903,2.228,1.899,2.355
+Sulawesi Tengah,freshwater pond,area_hectares,2.982,10.081,3.984,4.54,4.774,5.136,5.894,1.716,10.49,7.211,7.352
+Sulawesi Selatan,freshwater pond,area_hectares,894,847,819,1.146,1.086,1.659,1.317,6.928,1.799,2.181,1.602
+Sulawesi Barat,freshwater pond,area_hectares,66,46,74,66,385,390,201,2.122,344,327,268
+Sulawesi Tenggara,freshwater pond,area_hectares,-,2.497,58,129,301,407,889,344,820,993,789
+Maluku,freshwater pond,area_hectares,142,153,157,420,680,32,21,46,74,11,20
+Maluku Utara,freshwater pond,area_hectares,645,117,-,1.081,7,-,205,574,607,575,377
+Papua,freshwater pond,area_hectares,4,632,95,-,466,204,-,1.8,888,918,5.177
+Papua Barat,freshwater pond,area_hectares,1.261,72,334,1.128,1.128,5.449,1.313,904,1.747,2.475,2.399
+Indonesia,freshwater pond,area_hectares,107.785,90.33,105.127,241.891,270.354,146.577,126.382,131.776,176.509,161.387,189.196
+Aceh,cage,area_hectares,1,1,2,1,1,0,0,2,0,−,−
+Sumatera Utara,cage,area_hectares,1,2,5,-,19,32,31,37,33,33,38
+Sumatera Barat,cage,area_hectares,2,17,12,2,4,4,4,4,5,5,5
+Riau,cage,area_hectares,8,7,11,18,28,31,30,2,2,10,10
+Kepulauan Riau,cage,area_hectares,5,0,0,0,0,0,0,5,2,0,0
+Jambi,cage,area_hectares,2,95,99,2,16,21,26,0,9,9,65
+Sumatera Selatan,cage,area_hectares,0,1,2,1,0,0,0,-,1,1,1
+Kepulauan Bangka Belitung,cage,area_hectares,0,4,9,6,4,98,86,-,17,174,181
+Bengkulu,cage,area_hectares,-,3,0,0,0,-,-,26,-,−,−
+Lampung,cage,area_hectares,-,-,-,-,-,-,-,0,-,−,−
+DKI Jakarta,cage,area_hectares,-,-,-,-,-,-,-,-,-,−,−
+Jawa Barat,cage,area_hectares,14,10,17,19,5,1,2,0,1,2,15
+Banten,cage,area_hectares,7,12,5,3,29,75,31,0,22,21,40
+Jawa Tengah,cage,area_hectares,0,8,2,0,0,2,0,1,0,1,1
+DI Yogyakarta,cage,area_hectares,24,6,10,7,1,1,2,2,1,1,1
+Jawa Timur,cage,area_hectares,3,3,3,2,5,6,1,29,0,0,0
+Bali,cage,area_hectares,-,1,2,-,-,-,-,-,-,−,−
+Nusa Tenggara Barat,cage,area_hectares,18,6,12,12,12,9,21,6,3,4,4
+Nusa Tenggara Timur,cage,area_hectares,-,-,-,-,-,-,-,-,-,−,−
+Kalimantan Barat,cage,area_hectares,10,31,53,56,16,49,48,9,72,79,81
+Kalimantan Tengah,cage,area_hectares,6,22,59,42,134,270,242,264,35,41,427
+Kalimantan Selatan,cage,area_hectares,8,7,9,10,10,9,5,9,10,10,6
+Kalimantan Timur,cage,area_hectares,3,70,95,12,4,4,5,2,2,1,2
+Kalimantan Utara,cage,area_hectares,,,,,,,,,,,−
+Sulawesi Utara,cage,area_hectares,1,4,7,5,6,0,0,0,0,0,0
+Gorontalo,cage,area_hectares,36,0,0,0,0,1,1,0,0,0,0
+Sulawesi Tengah,cage,area_hectares,243,-,-,2,1,1,0,-,3,3,3
+Sulawesi Selatan,cage,area_hectares,-,1,4,-,-,-,-,2,-,−,−
+Sulawesi Barat,cage,area_hectares,0,9,9,3,3,3,3,1,1,0,1
+Sulawesi Tenggara,cage,area_hectares,-,-,0,0,-,-,-,2,,−,−
+Maluku,cage,area_hectares,3,-,0,0,-,-,-,-,-,−,−
+Maluku Utara,cage,area_hectares,5,-,1,-,-,-,3,-,-,−,−
+Papua,cage,area_hectares,-,-,-,-,-,0,-,21,-,−,−
+Papua Barat,cage,area_hectares,0,1,6,3,3,20,20,-,-,−,−
+Indonesia,cage,area_hectares,401,320,433,207,300,637,561,427,218,396,883
+Aceh,floating cage net,area_hectares,-,2,7,7,7,6,4,1,5,1,1
+Sumatera Utara,floating cage net,area_hectares,13,10,16,16,38,45,38,38,46,66,68
+Sumatera Barat,floating cage net,area_hectares,21,31,31,32,75,75,74,76,74,74,74
+Riau,floating cage net,area_hectares,33,-,-,0,0,0,0,1,16,6,7
+Kepulauan Riau,floating cage net,area_hectares,30,9,11,11,12,13,21,8,16,15,14
+Jambi,floating cage net,area_hectares,14,0,1,1,84,2,8,2,22,1,7
+Sumatera Selatan,floating cage net,area_hectares,15,-,1,0,1,1,0,0,10,12,6
+Kepulauan Bangka Belitung,floating cage net,area_hectares,22,9,13,12,23,296,645,-,318,321,357
+Bengkulu,floating cage net,area_hectares,26,1,1,0,0,0,0,317,0,0,0
+Lampung,floating cage net,area_hectares,-,-,-,-,-,-,-,11,-,−,−
+DKI Jakarta,floating cage net,area_hectares,-,-,-,-,-,-,-,-,-,−,−
+Jawa Barat,floating cage net,area_hectares,367,779,862,567,881,145,174,2,446,457,955
+Banten,floating cage net,area_hectares,84,8,3,4,64,67,65,0,41,2,53
+Jawa Tengah,floating cage net,area_hectares,34,2,1,1,0,1,0,254,0,0,0
+DI Yogyakarta,floating cage net,area_hectares,-,6,7,11,23,-,192,541,300,253,259
+Jawa Timur,floating cage net,area_hectares,39,0,0,0,1,3,4,64,2,4,3
+Bali,floating cage net,area_hectares,63,5,5,5,5,19,24,14,10,10,10
+Nusa Tenggara Barat,floating cage net,area_hectares,-,-,0,-,0,6,0,0,1,3,3
+Nusa Tenggara Timur,floating cage net,area_hectares,-,-,-,-,-,-,-,-,-,−,−
+Kalimantan Barat,floating cage net,area_hectares,42,-,0,2,39,3,3,3,3,18,19
+Kalimantan Tengah,floating cage net,area_hectares,-,-,2,3,18,35,3,6,1,1,8
+Kalimantan Selatan,floating cage net,area_hectares,68,1,3,3,4,5,5,5,5,7,7
+Kalimantan Timur,floating cage net,area_hectares,-,-,7,-,0,0,-,-,0,0,0
+Kalimantan Utara,floating cage net,area_hectares,,,,,,,,,,,−
+Sulawesi Utara,floating cage net,area_hectares,68,5,7,7,7,7,5,0,12,1,20
+Gorontalo,floating cage net,area_hectares,-,-,-,-,-,-,-,0,1,0,0
+Sulawesi Tengah,floating cage net,area_hectares,-,-,-,1,-,-,-,-,0,−,−
+Sulawesi Selatan,floating cage net,area_hectares,-,-,-,-,-,-,-,-,-,−,−
+Sulawesi Barat,floating cage net,area_hectares,26,53,79,52,23,24,28,-,16,20,24
+Sulawesi Tenggara,floating cage net,area_hectares,-,-,-,-,0,,0,28,1,−,−
+Maluku,floating cage net,area_hectares,2,-,-,-,-,-,-,-,-,−,−
+Maluku Utara,floating cage net,area_hectares,2,0,0,-,1,0,-,-,0,0,15
+Papua,floating cage net,area_hectares,-,-,-,0,-,0,-,-,0,−,1
+Papua Barat,floating cage net,area_hectares,-,-,-,-,-,-,-,-,0,0,0
+Indonesia,floating cage net,area_hectares,966,921,1.058,736,1.306,753,1.294,1 371,1.345,1.272,1.912
+Aceh,paddy field,area_hectares,3.359,2.478,7,2.607,2.607,2.607,2.309,1.171,1.535,1.6,2.972
+Sumatera Utara,paddy field,area_hectares,14.343,14.343,13.411,-,11.925,9.682,9.255,9.658,8.188,8.182,8.77
+Sumatera Barat,paddy field,area_hectares,1.487,1.47,1.598,2.577,2.625,2.205,2.476,3.048,3.134,3.132,3.393
+Riau,paddy field,area_hectares,-,-,-,-,-,-,-,-,-,2,2
+Kepulauan Riau,paddy field,area_hectares,17,18,19,19,25,12,19,17.609,141,3,3
+Jambi,paddy field,area_hectares,1.347,5.995,6.205,6.422,9.376,17.609,17.609,4.653,17.609,17.539,14.575
+Sumatera Selatan,paddy field,area_hectares,8.771,5.172,5.329,6.89,1.365,1.074,3.879,-,5.326,5.311,4.843
+Kepulauan Bangka Belitung,paddy field,area_hectares,2.71,2.561,1.575,2.257,1.553,1.238,1.126,-,209,161,152
+Bengkulu,paddy field,area_hectares,-,-,-,-,-,-,-,172,-,-,-
+Lampung,paddy field,area_hectares,-,-,-,-,-,-,-,105,-,-,-
+DKI Jakarta,paddy field,area_hectares,-,-,-,-,-,-,-,-,-,-,-
+Jawa Barat,paddy field,area_hectares,35.67,30.717,25.952,42.149,33.256,73.652,43.237,43.237,44.077,43.783,31.753
+Banten,paddy field,area_hectares,4.166,4.166,2.123,5.655,3.277,5.619,5.818,64,5.576,5.246,6.176
+Jawa Tengah,paddy field,area_hectares,771,2.5,786,805,639,71,67,41.413,64,64,89
+DI Yogyakarta,paddy field,area_hectares,34.076,33.85,33.643,37.456,40.659,29.077,41.299,3.863,4.697,26.877,25.654
+Jawa Timur,paddy field,area_hectares,7.902,7.782,7.836,6.49,5.929,4.81,562,5.254,3.863,3.074,3.074
+Bali,paddy field,area_hectares,322,308,271,247,247,376,537,424,270,254,247
+Nusa Tenggara Barat,paddy field,area_hectares,335,1.255,1.448,1.303,1.303,872,1.769,1.769,1.123,1.243,723
+Nusa Tenggara Timur,paddy field,area_hectares,-,84,97,123,23,22,22,68,62,129,60
+Kalimantan Barat,paddy field,area_hectares,-,-,-,-,-,-,-,-,-,-,-
+Kalimantan Tengah,paddy field,area_hectares,137,123,-,-,120,271,3,15,15,-,-
+Kalimantan Selatan,paddy field,area_hectares,259,174,185,151,219,168,156,211,211,211,211
+Kalimantan Timur,paddy field,area_hectares,-,-,-,-,-,34,69,74,74,84,20
+Kalimantan Utara,paddy field,area_hectares,,,,,,,,,,,-
+Sulawesi Utara,paddy field,area_hectares,1.512,1.512,1.606,1.665,1.72,1.877,2.596,5.343,5.064,5.038,5.038
+Gorontalo,paddy field,area_hectares,5,-,-,-,5,20,22,14,14,40,13
+Sulawesi Tengah,paddy field,area_hectares,7.018,4.534,6.893,7.485,7.118,10.723,11.08,-,15.071,12.433,12.962
+Sulawesi Selatan,paddy field,area_hectares,1.67,-,-,-,-,-,-,10.3,-,-,-
+Sulawesi Barat,paddy field,area_hectares,7,14,14,4,9,4,16,7.712,21,5,5
+Sulawesi Tenggara,paddy field,area_hectares,-,-,2.331,3.639,3.679,3.639,7.692,16,7.712,7.712,7.712
+Maluku,paddy field,area_hectares,-,-,-,-,-,-,-,-,-,-,-
+Maluku Utara,paddy field,area_hectares,-,-,-,-,-,-,-,-,-,-,-
+Papua,paddy field,area_hectares,-,-,-,-,-,26,14,-,-,-,-
+Papua Barat,paddy field,area_hectares,-,-,-,-,-,-,-,-,-,-,-
+Indonesia,paddy field,area_hectares,125.884,119.057,118.322,127.944,127.679,165.688,151.63,156.193,124.057,142.122,128.447
+Aceh,marine culture,tons,-,17,-,-,36,42,164,43,84,109,158
+Sumatera Utara,marine culture,tons,548,-,612,352,1.386,1.888,3.566,3.086,4.348,4.35,4.363
+Sumatera Barat,marine culture,tons,126,40,34,34,60,13,79,833,335,243,268
+Riau,marine culture,tons,26,59,5,4,-,11,3,2,5,401,619
+Kepulauan Riau,marine culture,tons,-,-,-,-,-,-,-,-,,-,-
+Jambi,marine culture,tons,-,-,-,316,357,392,-,421,23,-,-
+Sumatera Selatan,marine culture,tons,-,-,-,669,-,-,248,5.164,779,24,1
+Kepulauan Bangka Belitung,marine culture,tons,821,1.693,2.094,1.473,4.201,9.448,10.696,14.057,15.927,6.775,4.44
+Bengkulu,marine culture,tons,24,31,24,62,712,746,4.585,10.142,7.142,1.088,1.964
+Lampung,marine culture,tons,4.856,903,4.805,4.623,4.651,16.477,4.682,-,,15.358,19.044
+DKI Jakarta,marine culture,tons,1.909,1.457,1.345,1.53,1.234,35.281,26.726,3.071,2.517,4.066,2.464
+Jawa Barat,marine culture,tons,10.089,10.337,10.57,11.523,8.423,14.707,7.934,3.726,1.528,1.015,3.964
+Jawa Tengah,marine culture,tons,25.984,2.532,1.854,2.249,2.934,4.809,5.737,6.604,14.211,42.413,22.785
+DI Yogyakarta,marine culture,tons,-,-,-,-,-,-,-,-,,-,-
+Jawa Timur,marine culture,tons,4.556,10.348,13.013,73.738,339.487,389.43,412.798,561.887,580.683,601.413,615.466
+Banten,marine culture,tons,5.84,6.627,6.12,10.944,5.822,15.024,16.708,17.219,21.93,25.671,26.11
+Bali,marine culture,tons,161.121,164.769,152.306,129.174,136,99.883,106.667,144.61,146.192,84.931,107.921
+Nusa Tenggara Barat,marine culture,tons,36.425,60.691,75.656,86.622,147.604,163.287,278.107,451.482,599.742,749.659,921.54
+Nusa Tenggara Timur,marine culture,tons,271.88,481.123,504.709,696.279,498.428,347.828,377.203,398.739,1.846.350,1.966.260,2.283.347
+Kalimantan Barat,marine culture,tons,9.047,212,86,107,82,197,20,147,177,1.631,32
+Kalimantan Tengah,marine culture,tons,-,-,36,30,31,300,149,230,88,339,364
+Kalimantan Selatan,marine culture,tons,505,2.421,6.065,3.762,1.833,1.502,2.303,2.726,2.426,2.706,486
+Kalimantan Timur,marine culture,tons,81,1.743,18.464,6.006,7.597,55.995,83.216,195.53,249.746,321.128,22.128
+Kalimantan Utara,marine culture,tons,,,,,,,,,,,311.038
+Sulawesi Utara,marine culture,tons,7.739,6.63,4.502,4.827,8.347,48.546,103.544,159.642,174.052,301.876,339.578
+Sulawesi Tengah,marine culture,tons,124.512,170.275,182.074,286.294,710.991,716.496,734.635,891.428,1.234.021,1.137.589,1.274.906
+Sulawesi Selatan,marine culture,tons,201.406,406.474,415.727,461.593,627.383,815.777,1.024.310,1.480.791,1.661.417,2.087.873,2.411.918
+Sulawesi Tenggara,marine culture,tons,12.359,26.076,82.322,124.858,186.616,353.431,588.745,640.334,918.245,956.495,916.313
+Gorontalo,marine culture,tons,5.654,6.122,7.117,13.576,48.283,64.077,89.19,95.482,104.047,24.991,53.74
+Sulawesi Barat,marine culture,tons,-,1.199,578,1.294,9.942,13.211,21.553,27.343,33.127,39.323,36.864
+Maluku,marine culture,tons,265,3.352,17.533,37.066,52.339,275.193,610.712,476.175,586.106,496.004,712.609
+Maluku Utara,marine culture,tons,834,714,1.08,1.48,2.289,49.878,65.093,121.135,98.312,103.213,41.592
+Papua Barat,marine culture,tons,3.467,-,762,5.293,12.865,20.613,26.28,131,75.565,57.76,37.847
+Papua,marine culture,tons,-,77,39,226,149,224,176,57.555,146,51,155
+Indonesia,marine culture,tons,890.074,1.365.918,1.509.528,1.966.002,2.820.083,3.514.702,4.605.827,5.769.737,8.379.271,9.034.756,10.174.022
+Aceh,brackish pond,tons,12.336,19.596,26.451,30.936,25.851,31.041,23.405,27.994,32.94,37.721,42.223
+Sumatera Utara,brackish pond,tons,18.73,17.689,22.171,33.83,33.965,32.785,32.83,33.841,35.506,29.345,29.496
+Sumatera Barat,brackish pond,tons,5,5,4,5,10,12,12,26,179,297,332
+Riau,brackish pond,tons,741,245,507,839,964,2.371,2.12,662,329,311,135
+Kepulauan Riau,brackish pond,tons,1.304,1.575,1.252,1.822,2.061,2.097,1.852,47.278,52.201,786,521
+Jambi,brackish pond,tons,21.516,27.388,33.194,39.013,74.049,65.133,70.73,750,1.838,53.082,64.496
+Sumatera Selatan,brackish pond,tons,1.438,790,786,839,1.021,897,1.125,961,761,4.767,7.548
+Kepulauan Bangka Belitung,brackish pond,tons,123.571,158.011,165.99,158.264,78.031,53.248,54.666,662,91,71.064,53.076
+Bengkulu,brackish pond,tons,152,154,165,388,490,503,535,50.315,82.822,828,1.076
+Lampung,brackish pond,tons,-,-,253,130,9,14,13,732,538,35,42
+DKI Jakarta,brackish pond,tons,143,99,1.751,1.966,760,1.03,1.8,827,1.211,756,2.656
+Jawa Barat,brackish pond,tons,65.073,73.325,92.302,107.293,107.69,170.684,179.98,199.923,338.439,310.481,320.278
+Jawa Tengah,brackish pond,tons,52.381,54.165,67.819,73.393,72.701,83.878,115.786,110.526,188.407,212.693,171.485
+DI Yogyakarta,brackish pond,tons,213,224,301,428,464,268,499,602,817,2.495,3.372
+Jawa Timur,brackish pond,tons,122.467,75.954,104.865,78.922,111.445,158.927,177.682,170.434,177.077,191.61,206.362
+Banten,brackish pond,tons,10.877,11.744,15.262,16.19,15.874,56.309,59.345,51.535,58.511,60.07,60.112
+Bali,brackish pond,tons,2.741,2.795,2.897,5.566,3.505,2.649,2.232,1.899,3.005,3.554,3.288
+Nusa Tenggara Barat,brackish pond,tons,11.222,12.695,23.114,35.796,31.692,40.544,67.999,78.418,97.839,111.554,120.993
+Nusa Tenggara Timur,brackish pond,tons,227,714,495,443,464,1.027,1.195,1.497,1.586,1.902,3.575
+Kalimantan Barat,brackish pond,tons,1.864,2.09,3.13,8.2,4.44,12.889,10.089,19.805,47.723,46.73,20.158
+Kalimantan Tengah,brackish pond,tons,1.808,1.244,1.085,1.314,2.377,4.031,5.224,6.394,9.244,10.745,11.693
+Kalimantan Selatan,brackish pond,tons,5.316,3.415,6.027,7.82,11.277,15.378,20.101,23.392,23.826,27.177,33.954
+Kalimantan Timur,brackish pond,tons,26.978,21.828,31.72,33.196,31.333,53.517,51.164,60.557,54.208,52.572,38.792
+Kalimantan Utara,brackish pond,tons,,,,,,,,,,,5.366
+Sulawesi Utara,brackish pond,tons,183,114,161,256,96,606,428,261,10.451,668,703
+Sulawesi Tengah,brackish pond,tons,9.347,10.181,18.987,11.702,13.591,23.214,42.057,30.627,83.215,73.733,113.202
+Sulawesi Selatan,brackish pond,tons,133.088,104.996,297.677,272.891,233.607,534.456,600.241,744.385,918.645,1.001.214,1.052.493
+Sulawesi Tenggara,brackish pond,tons,17.479,11.316,9.5,24.703,30.337,46.962,54.921,66.183,86.506,75.954,74.888
+Gorontalo,brackish pond,tons,1.553,459,746,1.804,2.29,4.081,3.212,3.716,10.879,11.344,9.552
+Sulawesi Barat,brackish pond,tons,-,13.723,4.483,10.479,15.042,16.018,17.928,19.375,19.627,25.133,32.53
+Maluku,brackish pond,tons,482,150,160,180,629,527,1.741,1.205,4.264,5.415,12.485
+Maluku Utara,brackish pond,tons,360,8,6,23,69,127,85,296,253,156,92
+Papua Barat,brackish pond,tons,-,2.624,38,99,56,189,1.164,1.154,110,2.988,441
+Papua,brackish pond,tons,380,297,536,782,937,628,950,1.212,1.624,1.209,1.548
+Indonesia,brackish pond,tons,643.975,629.61,933.832,959.509,907.123,1.416.038,1.602.748,1.756.799,2.344.671,2.428.389,2.498.966
+Aceh,freshwater pond,tons,8.733,9.016,6.305,9.642,9.839,14.238,9.224,12.391,12.752,18.931,18.614
+Sumatera Utara,freshwater pond,tons,14.243,15.674,16.742,18.541,12.228,29.512,41.181,46.829,60.042,64.213,64.205
+Sumatera Barat,freshwater pond,tons,14.174,26.75,34.207,38.404,46.952,57.653,85.934,116.226,147.832,198.514,197.054
+Riau,freshwater pond,tons,24.769,24.414,25.485,21.084,29.846,29.447,37.973,37.672,45.284,54.561,55.709
+Kepulauan Riau,freshwater pond,tons,5.531,5.872,7.934,9.335,11.838,17.456,20.212,222.9,238.456,36.913,34.411
+Jambi,freshwater pond,tons,34.768,43.932,51.059,60.308,68.207,100.16,140.731,34.584,36.221,268.752,316.933
+Sumatera Selatan,freshwater pond,tons,4.427,3.893,6.214,8.851,10.713,13.82,23.673,1.982,1.399,46.012,55.635
+Kepulauan Bangka Belitung,freshwater pond,tons,13.417,13.966,19.318,23.919,21.987,32.378,50.453,11.205,13.366,70.089,55.35
+Bengkulu,freshwater pond,tons,536,751,693,1.033,841,1.2,1.352,56.076,58.573,2.275,1.028
+Lampung,freshwater pond,tons,178,505,336,245,366,327,2.563,24.575,58.526,11.973,14.43
+DKI Jakarta,freshwater pond,tons,6.83,3.365,2.683,2.905,915,14.055,5.617,4.156,3.036,5.168,4.266
+Jawa Barat,freshwater pond,tons,110.247,127.578,118.162,147.941,158.871,247.369,295.715,357.026,424.231,478.758,517.622
+Jawa Tengah,freshwater pond,tons,25.36,28.35,34.619,44.191,55.031,66.964,94.566,112.088,160.987,199.085,175.914
+DI Yogyakarta,freshwater pond,tons,8.225,9.059,11.427,14.1,17.009,38.772,43.795,49.412,57.006,62.276,65.542
+Jawa Timur,freshwater pond,tons,31.026,33.379,35.711,37.704,42.69,65.869,115.086,176.371,217.162,192.566,210.211
+Banten,freshwater pond,tons,5.254,4.972,8.319,7.423,9.409,12.217,12.864,15.381,17.061,18.289,17.535
+Bali,freshwater pond,tons,680,654,786,875,1.107,2.626,6.602,6.179,7.99,9.297,6.481
+Nusa Tenggara Barat,freshwater pond,tons,2.244,4.822,2.583,2.612,3.024,3.927,33.016,14.927,17.761,21.812,21.004
+Nusa Tenggara Timur,freshwater pond,tons,267,1.804,584,853,775,809,966,1.298,1.493,1.853,1.789
+Kalimantan Barat,freshwater pond,tons,1.532,2.427,2.302,2.461,6.106,4.509,7.215,8.013,13.931,19.366,17.876
+Kalimantan Tengah,freshwater pond,tons,863,857,979,2.2,5.161,8.706,12.505,18.184,21.448,22.784,29.202
+Kalimantan Selatan,freshwater pond,tons,3.282,4.923,5.976,8.144,19.746,31.329,27.045,35.249,37.156,41.668,54.18
+Kalimantan Timur,freshwater pond,tons,567,986,5.079,2.12,1.808,2.06,2.214,2.72,3.087,3.68,2.641
+Kalimantan Utara,freshwater pond,tons,,,,,,,,,,,559
+Sulawesi Utara,freshwater pond,tons,4.294,4.194,5.995,7.158,7.953,6.976,33.039,34.678,81.762,72.641,68.598
+Sulawesi Tengah,freshwater pond,tons,1.58,1.629,1.663,1.617,3.537,4.294,4.394,6.793,6.546,6.46,8.04
+Sulawesi Selatan,freshwater pond,tons,2.904,1.737,2.168,2.315,3.662,4.886,6.273,6.987,8.222,8.78,9.308
+Sulawesi Tenggara,freshwater pond,tons,4.392,911,926,486,848,3.73,4.169,6.08,6.176,4.967,2.855
+Gorontalo,freshwater pond,tons,113,380,470,400,520,652,1.025,4.477,5.531,9.492,4.166
+Sulawesi Barat,freshwater pond,tons,-,559,30,26,158,426,608,538,867,1.355,1.882
+Maluku,freshwater pond,tons,122,90,135,134,142,34,52,103,1.683,163,183
+Maluku Utara,freshwater pond,tons,168,174,200,223,429,1.351,1.93,1.215,323,569,322
+Papua Barat,freshwater pond,tons,4,3.211,169,914,1.192,796,2.335,5.184,1.717,1.777,1.784
+Papua,freshwater pond,tons,1.236,1.114,1.115,1.002,1.159,1.263,2.798,2.319,6.784,8.552,7.834
+Indonesia,freshwater pond,tons,331.966,381.945,410.373,479.167,554.067,819.809,1.127.127,1.433.820,1.774.407,1.963.509,2.043.161
+Aceh,cage,tons,342,27,4,128,65,143,298,223,20,-,–
+Sumatera Utara,cage,tons,234,258,323,600,6.731,2.251,252,1.208,503,358,1.628
+Sumatera Barat,cage,tons,9.558,3.448,4.294,3.044,3.2,3.267,2.371,3.979,5.602,6.034,5.898
+Riau,cage,tons,987,2.741,2.864,7.983,7.988,12.468,4.367,4.438,5.324,5.557,5.38
+Kepulauan Riau,cage,tons,3.627,92,371,141,721,386,356,85.825,86.896,213,84
+Jambi,cage,tons,17.401,20.393,18.325,21.246,24.029,27.053,42.911,48,135,92.519,65.032
+Sumatera Selatan,cage,tons,39,228,60,96,68,67,197,-,-,1.177,1.657
+Kepulauan Bangka Belitung,cage,tons,406,462,927,802,545,696,508,-,-,636,476
+Bengkulu,cage,tons,-,3,-,1,1,-,-,559,634,-,–
+Lampung,cage,tons,-,-,-,-,-,-,-,989,380,-,–
+DKI Jakarta,cage,tons,-,-,-,-,-,-,-,-,-,-,–
+Jawa Barat,cage,tons,514,970,1.068,923,225,346,491,365,286,227,233
+Jawa Tengah,cage,tons,375,481,495,617,1.445,2.557,2.697,1.108,984,1.73,1.154
+DI Yogyakarta,cage,tons,112,56,47,62,65,91,85,75,39,40,40
+Jawa Timur,cage,tons,2.798,1.31,1.106,666,134,264,676,428,345,591,1.487
+Banten,cage,tons,28,42,60,56,18,38,95,55,57,57,57
+Bali,cage,tons,-,46,49,-,-,158,-,-,-,-,–
+Nusa Tenggara Barat,cage,tons,350,375,470,916,379,306,1.249,1.379,1.543,1.449,1.665
+Nusa Tenggara Timur,cage,tons,-,-,-,-,-,-,-,-,-,-,–
+Kalimantan Barat,cage,tons,3.027,2.965,229,3.95,4.303,7.39,1.721,6.253,14.463,16.034,21.913
+Kalimantan Tengah,cage,tons,3.359,3.751,4.285,5.03,7.254,11.228,13.634,16.802,22.954,26.395,27.724
+Kalimantan Selatan,cage,tons,4.293,3.713,3.728,4.737,11.785,12.019,20.258,20.977,26.915,34.806,28.92
+Kalimantan Timur,cage,tons,18.627,12.239,23.216,24.067,31.869,35.905,35.103,32.288,32.156,32.784,29.746
+Kalimantan Utara,cage,tons,,,,,,,,,,,–
+Sulawesi Utara,cage,tons,1.302,1.266,263,190,534,3.825,3.112,299,343,345,300
+Sulawesi Tengah,cage,tons,23,44,27,29,41,266,273,346,9,38,25
+Sulawesi Selatan,cage,tons,2,-,-,-,104,123,194,217,364,282,352
+Sulawesi Tenggara,cage,tons,-,9,458,-,-,-,-,-,-,-,–
+Gorontalo,cage,tons,234,770,847,220,136,188,89,68,54,30,20
+Sulawesi Barat,cage,tons,-,-,48,-,-,-,-,1,-,-,–
+Maluku,cage,tons,-,-,9,-,-,-,-,-,-,-,–
+Maluku Utara,cage,tons,-,-,8,-,-,-,213,-,-,-,–
+Papua Barat,cage,tons,-,-,-,-,-,12,-,438,-,-,–
+Papua,cage,tons,251,510,349,266,131,223,234,-,-,-,–
+Indonesia,cage,tons,67.889,56.2,63.929,75.769,101.771,121.271,131.383,178.367,200.006,221.304,193.79
+Aceh,floating cage net,tons,-,345,479,289,200,555,271,316,480,240,300
+Sumatera Utara,floating cage net,tons,4.336,1.106,3.939,35.177,34.887,47.683,42.962,51.035,83.154,97.339,72.195
+Sumatera Barat,floating cage net,tons,5.07,8.378,10.825,48.164,24.769,35.849,36.664,52.929,45.123,49.483,73.526
+Riau,floating cage net,tons,163,-,-,40,98,87,16.875,26.02,23.401,25.152,25.315
+Kepulauan Riau,floating cage net,tons,949,4.729,8.073,9.896,10.981,11.96,11.93,42.821,47.793,12.677,12.029
+Jambi,floating cage net,tons,115,125,418,170,7.495,9.168,12.683,467,1.453,8.229,11.567
+Sumatera Selatan,floating cage net,tons,8,-,11,27,79,230,296,1,-,3.202,2.509
+Kepulauan Bangka Belitung,floating cage net,tons,1.08,1.249,1.04,1.27,1.482,2.145,2.747,-,-,3.698,3.385
+Bengkulu,floating cage net,tons,7,28,20,18,32,41,3,3.594,3.319,1,1
+Lampung,floating cage net,tons,-,-,-,-,-,-,-,10.87,15.371,-,–
+DKI Jakarta,floating cage net,tons,-,-,-,-,-,-,-,-,-,-,–
+Jawa Barat,floating cage net,tons,80.824,115.976,143.244,144.56,135.02,157.195,185.428,195.312,179.018,185.005,198.984
+Jawa Tengah,floating cage net,tons,6.737,6.965,7.169,9.864,11.067,15.99,21.823,29.346,28.701,41.833,44.749
+DI Yogyakarta,floating cage net,tons,192,147,18,17,10,13,22,14,16,1,0
+Jawa Timur,floating cage net,tons,-,1.323,1.372,1.91,2.155,2.557,9.281,11.7,12.726,11.694,11.361
+Banten,floating cage net,tons,99,147,211,144,655,862,1.989,2.452,1.118,977,1.113
+Bali,floating cage net,tons,115,145,165,396,519,1.811,3.533,2.89,4.098,4.359,4.687
+Nusa Tenggara Barat,floating cage net,tons,-,-,31,-,-,6.781,797,149,1.537,2.29,846
+Nusa Tenggara Timur,floating cage net,tons,-,-,-,-,-,-,-,-,-,-,–
+Kalimantan Barat,floating cage net,tons,30,-,3.521,173,273,2.213,10.928,2.866,3.227,2.943,3.933
+Kalimantan Tengah,floating cage net,tons,-,-,32,49,165,294,258,965,863,585,346
+Kalimantan Selatan,floating cage net,tons,212,424,503,596,959,2.945,6.94,8.496,5.991,8.681,7.835
+Kalimantan Timur,floating cage net,tons,-,-,49,9,4,-,-,-,61,3,1
+Kalimantan Utara,floating cage net,tons,,,,,,,,,,,–
+Sulawesi Utara,floating cage net,tons,7.965,1.489,8.502,9.31,6.496,7.499,2.943,4.324,39.902,36.708,54.661
+Sulawesi Tengah,floating cage net,tons,923,-,-,-,-,-,-,-,630,91,58
+Sulawesi Selatan,floating cage net,tons,-,-,-,40,-,-,-,-,375,-,-
+Sulawesi Tenggara,floating cage net,tons,-,-,-,-,-,-,-,-,-,-,-
+Gorontalo,floating cage net,tons,583,664,1.021,871,1.097,3.273,6.577,8.189,5.928,4.916,4.716
+Sulawesi Barat,floating cage net,tons,,-,-,-,-,4,4,-,-,-,–
+Maluku,floating cage net,tons,-,-,-,-,-,-,-,-,-,-,–
+Maluku Utara,floating cage net,tons,13,12,252,181,163,334,478,254,378,37,29
+Papua Barat,floating cage net,tons,-,-,-,-,-,11,-,-,3,-,7
+Papua,floating cage net,tons,-,-,-,-,-,-,-,-,583,731,1.518
+Indonesia,floating cage net,tons,109.421,143.251,190.893,263.169,238.606,309.499,375.43,455.012,505.248,500.873,535.673
+Aceh,paddy field,tons,3.023,3.263,2.428,1.829,2.058,792,1.089,591,934,1.15,1.988
+Sumatera Utara,paddy field,tons,6.302,5.213,9.623,9.083,7.95,4.987,4.816,8.249,10.204,9.152,8.744
+Sumatera Barat,paddy field,tons,3.213,1.249,6.243,7.894,9.269,5.823,6.494,7.367,7.8,7.948,8.688
+Riau,paddy field,tons,-,-,-,-,-,-,-,-,-,3,3
+Kepulauan Riau,paddy field,tons,8,8,8,8,19,6,19,6.098,9.655,21,15
+Jambi,paddy field,tons,7.925,8.598,8.873,9.425,10.66,15.491,24.681,8.646,6.315,12.56,12.13
+Sumatera Selatan,paddy field,tons,1.602,2.872,2.357,2.86,2.3,3.614,8.266,-,-,5.501,5.254
+Kepulauan Bangka Belitung,paddy field,tons,448,464,611,430,744,160,159,-,-,48,48
+Bengkulu,paddy field,tons,-,-,-,-,-,-,-,56,50,-,–
+Lampung,paddy field,tons,-,-,-,-,-,-,-,102,28,-,–
+DKI Jakarta,paddy field,tons,-,-,-,-,-,-,-,-,-,-,–
+Jawa Barat,paddy field,tons,34.519,27.529,26.223,23.309,31.784,32.66,25.556,22.646,27.065,30.532,34.179
+Jawa Tengah,paddy field,tons,2.439,3.992,2.051,2.279,1.472,1.798,2.255,2.064,3.817,4.054,4.936
+DI Yogyakarta,paddy field,tons,389,186,157,134,134,438,142,156,147,153,220
+Jawa Timur,paddy field,tons,51.278,41.822,17.248,45.814,11.879,17.232,341,7.153,7.968,46.011,48.236
+Banten,paddy field,tons,5.21,5.15,4.36,4.02,3.725,2.327,739,491,753,571,499
+Bali,paddy field,tons,358,356,291,276,254,368,338,370,280,325,245
+Nusa Tenggara Barat,paddy field,tons,97,965,89,142,139,127,242,703,936,617,874
+Nusa Tenggara Timur,paddy field,tons,-,88,40,29,30,40,36,49,44,94,894
+Kalimantan Barat,paddy field,tons,-,-,-,-,-,2,-,-,-,-,–
+Kalimantan Tengah,paddy field,tons,129,665,-,-,-,175,2,4,3,-,–
+Kalimantan Selatan,paddy field,tons,117,113,265,263,443,288,256,189,331,730,665
+Kalimantan Timur,paddy field,tons,-,-,-,-,-,27,21,18,22,434,8
+Kalimantan Utara,paddy field,tons,,,,,,,,,,,–
+Sulawesi Utara,paddy field,tons,1.159,1.426,1.485,1.623,2.701,7.834,8.484,12.956,16.353,17.304,13.056
+Sulawesi Tengah,paddy field,tons,102,-,-,-,2,10,19,22,25,17,17
+Sulawesi Selatan,paddy field,tons,2.024,1.686,2.276,1.801,1.144,2.126,2.255,2.627,3.114,5.285,5.35
+Sulawesi Tenggara,paddy field,tons,9,-,-,-,-,-,-,-,-,-,–
+Gorontalo,paddy field,tons,2,28,32,9,5,11,11,3,7,17,4
+Sulawesi Barat,paddy field,tons,-,-,351,334,201,142,221,1.257,1.453,1.737,1.579
+Maluku,paddy field,tons,-,-,-,-,-,-,-,-,-,-,–
+Maluku Utara,paddy field,tons,-,-,-,-,-,-,-,-,-,-,–
+Papua Barat,paddy field,tons,-,-,-,21,-,128,5,-,-,-,–
+Papua,paddy field,tons,-,-,-,-,-,-,-,-,-,-,–
+Indonesia,paddy field,tons,120.353,105.671,85.009,111.584,86.913,96.605,86.448,81.818,97.303,144.263,147.631

@@ -1,0 +1,46 @@
+---
+title: "Earth Engine Python API Guide"
+author: "Tyler Clavelle"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This document is a cheat sheet for using the Python API for Google Earth Engine. 
+
+## Install and/or Verify Docker
+
+First, verify your Docker installation is working by opening up a command prompt (terminal) and running the following command: `docker run hello-world`
+
+If successful, you should get back a `"Hello from Docker!"` message with additional information on your Docker installation. If not successful, install Docker by following the [installation instructions on the Docker website](https://www.docker.com/community-edition).
+
+## Define a Local Workspace
+
+The next step is to create several variables in your terminal "workspace" that will be used to launch a Docker container with the Earth Engine API included.
+
+```{bash, eval = FALSE}
+# Your Google Cloud Project ID, which is found by logging into your Google Cloud console
+export GCP_PROJECT_ID=tyler-project-164318
+# The name of the Earth Engine Datalab docker container image
+export CONTAINER_IMAGE_NAME=gcr.io/earthengine-project/datalab-ee:latest
+# The workspace you will be working in
+export WORKSPACE=${HOME}/workspace/datalab-ee
+# Create the workspace directory and change it to your working directory
+mkdir -p $WORKSPACE
+cd $WORKSPACE
+```
+
+## Create or Run a Datalab & Earth Engine Container
+After changing to your workspace directory, create a new Datalab+EE container (or run an existing container that you previously created), by using the following docker run command: 
+
+```{bash, eval=F}
+docker run -it -p "127.0.0.1:8081:8080" -v "$WORKSPACE:/content" -e "PROJECT_ID=$GCP_PROJECT_ID" $CONTAINER_IMAGE_NAME
+```
+
+The command first looks for the `datalab-ee` container image in the workspace and downloads it if it is unable to find it. It will then launch Datalab locally, which you access by navigating to `http://localhost:8081/` in the browser. It also specifies the `/content` volume to use for data storage.
+
+
+

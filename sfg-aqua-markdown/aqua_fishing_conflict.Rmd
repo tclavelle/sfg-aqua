@@ -1,0 +1,104 @@
+---
+title: "Anticipating conflicts in global seafood production"
+output: html_notebook
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+
+```{r}
+# Packages and Parameters -----------------------------------------------------
+library(tidyverse)
+library(maps)
+library(raster)
+library(rasterVis)
+library(rgdal)
+library(viridis)
+
+# rainbow color scheme
+# cols = rev(colorRampPalette(brewer.pal(11, 'Spectral'))(255))
+cols1 = viridis(n = 255)
+cols2 = viridis(n = 255, option = 'plasma')
+#setting margins for plotting
+par(mar=c(2,2,1,1))
+
+# Load Data Layers -----------------------------------------------------
+
+# Load raster of aquaculture production
+fish_raw <- raster(x = '../../../Box Sync/SFG Centralized Resources/Projects/Waitt Aquaculture/aqua-mapping/aqua-mapping-data/gentry_2017_fish.tiff')
+bivalve_raw <- raster(x = '../../../Box Sync/SFG Centralized Resources/Projects/Waitt Aquaculture/aqua-mapping/aqua-mapping-data/gentry_2017_bivalve.tiff')
+gfw <- raster(x = '../../../Box Sync/SFG Centralized Resources/Projects/Waitt Aquaculture/aqua-mapping/aqua-mapping-data/indo_super_high_res.tif')
+
+# Process Data -----------------------------------------------------
+
+# Resample fish and bivalve rasters to match 3-arc minute resolution of GFW raster
+fish <- aggregate(fish_raw, fact = 6)
+bivalve <- aggregate(bivalve_raw, fact = 6)
+
+# Set extent to visualize
+map_extent <- c(60, 150, -45, 15)
+indo_extent <- c(93, 139, -12, 9)
+
+# Crop fish and bivalve to extent of GFW
+fish <- crop(x = fish, y = map_extent)
+bivalve <- crop(x = bivalve, y = map_extent)
+gfw <- crop(x = gfw, y = map_extent)
+
+# Rescale GFW raster to log 10
+gfw_pref <- gfw
+gfw_pref[gfw_pref < 1] <- NA
+gfw_pref <- log10(gfw_pref)
+
+# Make a combination raster of all aquaculture 
+all_aqua <- fish + bivalve
+
+# Make ratio rasters of aquaculture and fishing effort
+gfw_to_aqua <- gfw_pref / all_aqua
+gfw_to_fish <- gfw_pref / fish
+```
+
+## Concept
+To compare the spatial distribution of fishing effort (Kroodsma *et al.,* in review) to the map of global mariculture potential (Gentry *et al.,* 2017) to anticipate where conflicts may arise and determine optimal areas for development.
+
+```{r}
+# Plot raster
+plot(gfw_pref, 
+     col = cols2,
+     main = 'Fishing hours (log) by Indonesian fishing vessels')
+#add a landmap to your shapefile
+map('world',fill=T,add=T,col='gray80')
+```
+
+
+```{r}
+# Plot raster
+plot(x = fish, col = cols1, main = 'Finfish mariculture potential', ext = map_extent);
+# add a landmap to your shapefile
+map('world',fill=T,add=T,col='gray80')
+```
+
+```{r}
+# Plot raster
+plot(x = bivalve, col = cols1, main = 'Bivalve mariculture potential', ext = map_extent);
+# add a landmap to your shapefile
+map('world',fill=T,add=T,col='gray80')
+```
+
+```{r}
+# Plot raster
+plot(gfw_to_fish, col = cols1, ext = c(95, 120, -8, 5), 
+     main = 'Ratio of fishing effort to finfish mariculture potential') # Zoom to country
+#add a landmap to your shapefile
+map('world',fill=T,add=T,col='gray80')
+```
+
+
+```{r}
+# Plot raster
+plot(gfw_to_fish, col = cols1, ext = c(130, 140, -12, 0)) # Zoom to country
+#add a landmap to your shapefile
+map('world',fill=T,add=T,col='gray80')
+```
+

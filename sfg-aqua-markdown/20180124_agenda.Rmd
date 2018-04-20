@@ -1,0 +1,51 @@
+---
+title: "2018 Aquaculture Mapping Kick-off Meeting"
+date: "January 24, 2018"
+output: pdf_document
+---
+
+## Agenda (2-3pm)
+1. Review project proposal (milestones, deliverables, etc.) - **2:00-2:20**
+2. Discuss project workstreams and roles - **2:20-2:40**
+3. Align on countries for analysis - **2:40-3:00**
+
+### Proposal Details
+
+**Budget ($79,981)**  
+
++ Salaries ($46,884) - Tyler (45%); Jen/Laura Lea (25%); Postdoc (10%)
++ Travel - ($10,400) - EE User Summit; RStudio conference; Remote sensing conference?
+
+**Scope of Work (2018)**  
+
++ Identify the universe of mariculture types to characterize and develop a reference library of   
+    satellite images for identified mariculture types
++ Consult with remote sensing experts to identify most appropriate and fully represented          
+      algorithms to map identified mariculture types
++ Identify 3-4 country-level applications for algorithm development and fine-scale mapping that         represent diverse geographies and mariculture types
+    + Current proposed countries include: China, Indonesia, and Chile
+    + Additional candidates include: India, Japan, Norway
++ Compile currently available national datasets of mariculture farm locations in selected 
+      countries
++ Develop and apply algorithms to map existing mariculture footprint in selected countries
++ Develop globally representative training data set from country applications  
+
+### Project Workstreams
+
+1. **Logistics**
+  + Tyler and Jen/Laura Lea will work together to schedule meetings and track progress 
+  + Tyler will hold informal monthly check-in calls with Cherie to keep Waitt updated
+
+2. **Technical** 
+  + Tyler will lead algorithm development and will leverage Kelly Caylor as a technical advisor 
+  + Tyler and Dan will collaborate to develop a more robust and scalable analysis using the Earth     
+    Engine Python API 
+  + Tyler and Jen will work together to identify existing aquaculture resources (maps, data, reports)     and develop a system for compiling training data in the target countries
+  
+### Target Countries
+The first step is to align on 3-4 countries to focus the analysis on. These countries should ideally contain a variety of aquaculture types that provide a representative sample of global aquaculture. 
+
++ Waitt country list - Belize, Nicaragua, Chile, Argentina, Congo, Guinea, Fiji, Peru, Portugal, Mexico, Costa Rica, Tonga, Curacao
++ SFG countries of interest (not already listed) - China, India, Indonesia, Philippines, Brazil
+  
+
