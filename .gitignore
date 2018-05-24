@@ -10,3 +10,4 @@
 *.docx
 *.html
 *china_examples.xlsx
+.ipynb_checkpoints/

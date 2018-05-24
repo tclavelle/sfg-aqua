@@ -8,11 +8,12 @@ library(tidyverse)
 library(sf)
 library(viridis)
 library(scales)
+library(RcppRoll)
 
 # Read shapefile
-indo <- st_read(dsn = "../../Shapefiles/IDN_adm_shp/", layer = "IDN_adm1")
+indo <- st_read(dsn = "../../../Shapefiles/IDN_adm_shp/", layer = "IDN_adm1")
 # Production and area data
-aqua <- read_csv(file = "sfg-aqua-data/indo-data/indo_aqua_stats.csv", na = c("-"))
+aqua <- read_csv(file = "../sfg-aqua-data/indo-data/indo_aqua_stats.csv", na = c("-"))
 # Simplify shapefile
 indo <- st_simplify(indo, dTolerance = 0.01)
 ```
@@ -29,7 +30,7 @@ aqua <- aqua %>%
          NAME_1 = factor(province))
 ```
 
-Calculate summary statistics to use for maps
+Calculate summary statistics to use for maps:
 
 ```{r}
 # Area of brackish water ponds
@@ -77,7 +78,7 @@ ggplot(area_map) +
   theme_minimal() +
   theme(legend.position = 'bottom')
 
-ggsave(filename = "sfg-aqua-figures/indo_brackish_area.png", width = 8, height = 6)
+# ggsave(filename = "sfg-aqua-figures/indo_brackish_area.png", width = 8, height = 6)
 ```
 
 ```{r}
@@ -92,7 +93,7 @@ ggplot(tons_map) +
   theme_minimal() +
   theme(legend.position = 'bottom')
 
-ggsave(filename = "sfg-aqua-figures/indo_brackish_area.png", width = 8, height = 6)
+# ggsave(filename = "sfg-aqua-figures/indo_brackish_area.png", width = 8, height = 6)
 ```
 
 ```{r}
@@ -107,7 +108,7 @@ ggplot(intensity_map) +
   theme_minimal() +
   theme(legend.position = 'bottom')
   
-ggsave(filename = "sfg-aqua-figures/indo_brackish_intensity.png", width = 8, height = 6)
+# ggsave(filename = "sfg-aqua-figures/indo_brackish_intensity.png", width = 8, height = 6)
 ```
 
 ```{r}
@@ -122,7 +123,7 @@ ggplot(perc_change_map) +
   theme_minimal() +
   theme(legend.position = 'bottom')
   
-ggsave(filename = "sfg-aqua-figures/indo_brackish_perc_change_area.png", width = 8, height = 6)
+# ggsave(filename = "sfg-aqua-figures/indo_brackish_perc_change_area.png", width = 8, height = 6)
 ```
 
 ```{r}
@@ -137,5 +138,24 @@ ggplot(perc_change_map) +
   theme_minimal() +
   theme(legend.position = 'bottom')
   
-ggsave(filename = "sfg-aqua-figures/indo_brackish_perc_change_area.png", width = 8, height = 6)
+# ggsave(filename = "sfg-aqua-figures/indo_brackish_perc_change_area.png", width = 8, height = 6)
+```
+
+## Production and Area Plots
+
+```{r}
+aqua %>% 
+  filter(province %in% c('Jawa Barat', 'Jawa Tengah', 'Jawa Timur', 'Banten')) %>% 
+  filter(type == 'brackish pond') %>% 
+  ggplot(aes(x = as.integer(year), y = area_hectares, color = province)) +
+  geom_line()
+```
+
+```{r}
+aqua %>% 
+  filter(province %in% c('Papua Barat')) %>% 
+  filter(type %in% c('marine culture')) %>% 
+  ggplot(aes(x = as.integer(year), y = tons, color = type)) +
+  geom_line() +
+  facet_wrap(~type)
 ```
