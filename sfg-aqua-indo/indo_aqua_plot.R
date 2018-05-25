@@ -1,28 +1,31 @@
-setwd("~/Desktop/R/General")
-data<-read.csv("indo_aqua_stats.csv",stringsAsFactors = FALSE)
-data[is.na(data)] <- 0
-
+##################################################
+## Project: Indonesia aquaculture data exploration
+## Author: Jen Bone
+##################################################
 
 library(tidyverse)
 library(ggplot2)
 
+data <- read_csv("sfg-aqua-data/indo-data/indo_aqua_stats.csv", na = c('-'))
+# data[is.na(data)] <- 0
 
+target<- c("brackish pond", "marine culture")
 
-target<- c("brackish_pond", "marine_culture")
 hadatareshaped<- data %>%
-  filter(type%in%target & metric == "area_hectares")%>%
-  gather(year, area, X2005:X2015)%>%
-  mutate(year= ifelse(year=="X2005", "2005",
-                      ifelse (year == "X2006", "2006",
-                              ifelse (year == "X2007", "2007",
-                                      ifelse (year == "X2008", "2008",
-                                              ifelse (year == "X2009", "2009",
-                                                      ifelse (year == "X2010", "2010",
-                                                              ifelse (year == "X2011", "2011",
-                                                                      ifelse (year == "X2012", "2012",
-                                                                              ifelse (year == "X2013", "2013",
-                                                                                      ifelse (year == "X2014", "2014",
-                                                                                              ifelse (year == "X2015", "2015","no"))))))))))))%>%
+  filter(type %in% target & metric == "area_hectares") %>%
+  gather(year, area, `2005`:`2015`) %>%
+  mutate(year = as.numeric(year)) %>% 
+  # mutate(year= ifelse(year=="X2005", "2005",
+  #                     ifelse (year == "X2006", "2006",
+  #                             ifelse (year == "X2007", "2007",
+  #                                     ifelse (year == "X2008", "2008",
+  #                                             ifelse (year == "X2009", "2009",
+  #                                                     ifelse (year == "X2010", "2010",
+  #                                                             ifelse (year == "X2011", "2011",
+  #                                                                     ifelse (year == "X2012", "2012",
+  #                                                                             ifelse (year == "X2013", "2013",
+  #                                                                                     ifelse (year == "X2014", "2014",
+  #                                                                                             ifelse (year == "X2015", "2015","no"))))))))))))%>%
   spread(type,area)%>%
   #mutate(totalarea= brackish_pond + marine_culture)%>%
   filter(province != "Indonesia")
