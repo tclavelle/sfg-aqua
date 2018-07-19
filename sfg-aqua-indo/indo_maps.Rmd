@@ -9,6 +9,7 @@ library(sf)
 library(viridis)
 library(scales)
 library(RcppRoll)
+library(patchwork)
 
 # Read shapefile
 indo <- st_read(dsn = "../../../Shapefiles/IDN_adm_shp/", layer = "IDN_adm1")
@@ -28,6 +29,12 @@ aqua <- aqua %>%
          tons          = as.numeric(gsub('\\.', '', tons)),
          tons_per_ha   = tons / area_hectares,
          NAME_1 = factor(province))
+
+# Totals for Indonesia
+aqua %>% 
+  filter(province == 'Indonesia' & year == '2015') %>% 
+  filter(type != 'freshwater pond') %>% 
+  summarize(area = sum(area_hectares, na.rm = T))
 ```
 
 Calculate summary statistics to use for maps:
@@ -144,6 +151,39 @@ ggplot(perc_change_map) +
 ## Production and Area Plots
 
 ```{r}
+aqua_totals <- aqua %>% 
+  filter(year == max(year, na.rm = T)) %>%
+  filter(province != 'Indonesia') %>% 
+  group_by(type) %>% 
+  summarize(`Production (million tons)` = sum(tons, na.rm = T) / 1e6,
+            `Area (hectares)`           = sum(area_hectares, na.rm = T),
+            Efficiency                  = 1e6 * `Production (million tons)` / `Area (hectares)`)
+
+pA <- aqua_totals %>% 
+  ggplot(aes(x = fct_reorder(type, `Production (million tons)`, .desc = T))) +
+  geom_bar(aes(y = `Production (million tons)`), stat = 'identity') +
+  scale_y_continuous(labels = comma) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank())
+
+ggsave(filename = '../sfg-aqua-figures/indo_aqua_barplot_A.png', height = 2.5, width = 7)
+
+pB <- aqua_totals %>% 
+  ggplot(aes(x = fct_reorder(type, `Production (million tons)`, .desc = T))) +
+  geom_bar(aes(y = `Area (hectares)`), stat = 'identity') +
+  scale_y_continuous(labels = comma) +
+  theme_minimal() +
+  theme(axis.title.x = element_blank())
+
+ggsave(filename = '../sfg-aqua-figures/indo_aqua_barplot_B.png', height = 2.5, width = 7)
+
+p1 <- pA + pB + plot_layout(ncol = 1)
+
+ggsave(filename = '../sfg-aqua-figures/indo_aqua_barplot.png', height = 4, width = 7)
+```
+
+
+```{r}
 aqua %>% 
   filter(province %in% c('Jawa Barat', 'Jawa Tengah', 'Jawa Timur', 'Banten')) %>% 
   filter(type == 'brackish pond') %>% 
@@ -159,3 +199,17 @@ aqua %>%
   geom_line() +
   facet_wrap(~type)
 ```
+
+Calculate the increase in production that could occur from all farms in Indonesia acheiving an intensity of 5 tons per hectare:
+
+```{r}
+aqua %>% 
+  filter(year == 2015 & type == 'brackish pond' & province != 'Indonesia') %>% 
+  select(-NAME_1, -year) %>% 
+  mutate(tons_per_ha_scenario = ifelse(tons_per_ha < 5, 5, tons_per_ha),
+         tons_scenario = area_hectares * tons_per_ha_scenario) %>%  # increase intensity for low intensity provinces
+  summarize(tons_current  = sum(tons, na.rm = T),
+            tons_scenario = sum(tons_scenario, na.rm = T),
+            increase      = tons_scenario - tons_current) 
+```
+
