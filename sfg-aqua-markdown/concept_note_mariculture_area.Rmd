@@ -1,0 +1,108 @@
+---
+title: 'Concept Note: Mariculture''s Global Footprint'
+author: "Tyler Clavelle"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.align = 'center')
+```
+
+```{r}
+# Packages
+library(tidyverse)
+library(scales)
+library(here)
+```
+
+```{r, root.dir = '..'}
+### Data
+source('../sfg-aqua-scripts/aqua_area_analysis/compile_countries.R')
+```
+
+
+# Concept
+
+This document outlines a concept for a paper on the global footprint of aquaculture. To the best of our knowledge, no point estimates or timeseries exist for the aquaculture's global footprint. However, these data are reported in national datasets for a handful of the world's largest aquaculture producers, including China, Indonesia, and Vietnam. The strategy for this analysis would be to use efficiencies (production per hectare) from the available national datasets to extrapolate area estimates for the remainder of global aquaculture production not captured by the national datasets. These extrapolations could be species group (e.g. finfish, crustacean) and/or production type (e.g. freshwater, brackish, marine) specific based on each country's aquaculture portfolio as reported in the FAO data. Discussion would then compare area estimates and efficiences to terrestrial agriculture/livestock and review the emerging remote sensing literature for mapping these areas in high resolution.
+
+## Considerations
+
++ All aquaculture or just marine aquaculture?  
++ Include seaweed?
++ Regression-based approach or simple extrapolations?
+
+
+# Background
+
+In 2014, aquaculture produced 73.8 million metric tonnes (MMT) of fish and 27.3 MMT of aquatic plants. 2014 was also the first time when aquaculture produced more food for human consumption than capture fisheries. The vast majority (90%) of this production came from just 10 countries (Table 1).
+
+```{r}
+cntry_total %>% 
+  select(country, total, perc, cum_perc) %>% 
+  slice(1:10) %>% 
+  knitr::kable(col.names = c('Country', 'Production (MT)', 'Global %', 'Cumulative %'),
+               caption = 'Table 1: Total aquaculture production (including aquatic plants) for the largest 10 producers')
+```
+
+Looking across production environments, freshwater aquaculture accounted for 47.1 MMT (64%) of food fish production while marine and brackish water aquaculture combined for the remaining 26.7 MMT (36%).  
+
+```{r}
+# Total global production
+fao %>% 
+  filter(food_cat == 'Food fish') %>%
+  group_by(year, environment) %>% 
+  summarize(production = sum(production, na.rm = T) / 1e6) %>% 
+  filter(year >= 1990) %>% 
+  ggplot(aes(x = year, y = production, fill = environment)) +
+  geom_area() +
+  labs(y = 'Production (MMT)',
+       x = 'Year',
+       fill = 'Environment') +
+  theme_minimal()
+
+```
+
+## Marine Aquaculture
+
+Focusing in on marine aquaculture (mariculture), the top 10 producers are largely the same and account for a slightly higher fraction (92.4%) of global mariculture (Table 2).
+
+```{r}
+marine_cntry_total %>% 
+  select(country, total, perc, cum_perc) %>% 
+  slice(1:10) %>% 
+  knitr::kable(col.names = c('Country', 'Production (MT)', 'Global %', 'Cumulative %'),
+               caption = 'Table 1: Total aquaculture production (including aquatic plants) for the largest 10 producers')
+```
+
+Let's combine the data for production (from FAO) and area (national statistics) to get a sense of how much of global mariculture production has the area accounted for:
+
+```{r}
+# Mariculture production and percentage of global total by country and year
+p1_df <- fao %>% 
+  filter(environment != 'Freshwater') %>% 
+  group_by(year) %>% 
+  mutate(global_prod = sum(production, na.rm = T),
+         perc_of_global = production / global_prod * 100) %>%
+  ungroup() %>% 
+  filter(country %in% global_total$country) %>% 
+  group_by(country, year) %>% 
+  summarize(production = sum(production, na.rm = T),
+            perc_of_global = sum(perc_of_global, na.rm = T))
+
+# Join with area data
+p1_df <- p1_df %>% 
+  left_join(global_total) %>% 
+  filter(year > 1999)
+```
+
+
+```{r, eval = FALSE}
+# Total global area
+global_total %>% 
+  filter(year >= 1995) %>% 
+  ggplot(aes(x = year, y = total_area, fill = country)) + 
+  geom_area()
+```
+

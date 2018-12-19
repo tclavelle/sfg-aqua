@@ -11,7 +11,7 @@ library(gridExtra)
 library(readxl)
 
 # Aquaculture data
-aqua <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/FAO Aquaculture Data Final.csv', stringsAsFactors = F)) %>%
+aqua <- tbl_df(read.csv(file = '../../../Google Drive/Project Data/fao-data/FAO Aquaculture Data Final.csv', stringsAsFactors = F)) %>%
   # filter(Enviro %in% c('Marine', 'Brackishwater') & !grepl('Inland', AreaFAO)) %>%
   select(Country, CommName, SpeciesCatName, Enviro, AreaFAO, Year, AquaProduction, AquaValue, FoodCat) %>%
   rename(country      = Country,
@@ -27,28 +27,28 @@ aqua_ff <- aqua %>%
   filter(FoodCat == 'Food Fish')
 
 # fishery data
-fish <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/fao_capture_50to14.csv', na.strings = c('...','0 0','-'), stringsAsFactors = F)) %>%
+fish <- tbl_df(read.csv(file = '../../../Google Drive/Project Data/fao-data/fao_capture_50to14.csv', na.strings = c('...','0 0','-'), stringsAsFactors = F)) %>%
   gather('Year',Catch,contains('X'),convert=T) %>%
   mutate(Year  = as.numeric(gsub('X','',Year)),
          Catch = as.numeric(gsub(pattern = ' F', replacement = '',Catch))) %>%
   filter(!`Country..Country.` %in% c('Totals - Quantity (tonnes)', 'Totals - Quantity (number)'))
 
 # Commodities data
-commods <- tbl_df(read.csv(file = '../../Google Drive/Project Data/fao-data/Commodity_quantity_76to13.csv', na.strings = c('...','0 0', '-'), stringsAsFactors = FALSE)) %>%
+commods <- tbl_df(read.csv(file = '../../../Google Drive/Project Data/fao-data/Commodity_quantity_76to13.csv', na.strings = c('...','0 0', '-'), stringsAsFactors = FALSE)) %>%
                     gather('year','quantity',contains('X'),convert=T) %>%
                     mutate(year     = as.numeric(gsub('X','',year)),
                            quantity = as.numeric(quantity)) %>%
   rename(isscaap   = `Commodity..ISSCAAP.group.`,
          commodity = `Commodity..Commodity.` )
                   
-commod_value <- read_csv(file = '../../Google Drive/Project Data/fao-data/Commodity_value_76to13.csv')
+commod_value <- read_csv(file = '../../../Google Drive/Project Data/fao-data/Commodity_value_76to13.csv')
 
 
 
 # rename columns
 colnames(fish) <- c('country', 'comm_name', 'sci_name', 'isscaap', 'fao_area', 'fao_code', 'units', 'year', 'catch')
 
-exvessel <- read_excel(path = '../price-db-sfg/price-db-data/FAO exvessel estimates from archives.xlsx', sheet = 1) %>%
+exvessel <- read_excel(path = '../../price-db-sfg/price-db-data/FAO exvessel estimates from archives.xlsx', sheet = 1) %>%
   rename(isscaap = `Species group`,
          year    = Year, 
          exvessel   = Value) %>%
@@ -128,7 +128,7 @@ p3 %>%
         legend.position = 'bottom',
         legend.title = element_text(size = 8))
 
-ggsave(filename = 'sfg-aqua-figures/figure_1_production.pdf', width = 5, height = 4.75)
+# ggsave(filename = 'sfg-aqua-figures/figure_1_production.pdf', width = 5, height = 4.75)
 ```
 
 ```{r}

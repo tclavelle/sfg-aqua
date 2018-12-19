@@ -1,0 +1,73 @@
+---
+title: "Guide to Using Jupyter Notebooks on Tana Server"
+author: "Tyler Clavelle"
+date: "8/6/2018"
+output: html_document
+---
+
+## Overview
+
+This document is a guide to working with Python in Jupyter Notebooks remotely via the tana GPU server at UCSB's Earth Research Institute (ERI). Topics covered include the following:
+
++ Logging into Tana via SSH
++ Transferring files with `rsync`
++ Creating and using Python environments with `conda`
++ Launching Jupyter Notebooks and accessing them with Jupyer Hub
+
+### 1. Log into Tana
+
+The first step is to connect to tana via SSH by opening a new Terminal window and entering the following command:
+
+```
+$ ssh tclavelle@tana.eri.ucsb.edu 
+```
+Enter the password following the prompt. Alternatively, setup public/private keys using `ssh-copy-id` to authenticate the machine and avoid entering your password each time.
+
+### 2. Transferring files with `rsync`
+
+Next, we can use the `rsync` bash command to transfer files from our local machine to the remote Tana server. First, use `cd` to change directories to the directory containing the files you'd like to transfer. Then use the following command to transfer files to the remote server, making sure to specify the specific location on the server where you'd like to transfer the files to:
+
+```
+rsync -avzhe ssh localfile tclavelle@tana.eri.ucsb.edu:/tana-crunch/CropMask_RCNN/data/aqua/gridded_planet/
+```
+
+Where `localfile` is the name of the file/directory to be transferred. You can check that the files transferred to the right location by logging into the server and running the `ls -a` command from the target directory (the `-a` option will show hidden files like `.ipynb_checkpoints`).
+
+### 3. Using `conda` environments
+
+This project requires using numerous Python libraries, which we manage using the [Conda](https://www.anaconda.com/distribution/) package and environment manager.
+
+First, check to see that `conda` is installed on the server using the `$ conda` command. If you see the error `conda: command not found` it means `conda` is not already installed. If installing `conda` on the server for the first time, [see these instructions](https://stackoverflow.com/questions/28852841/install-anaconda-on-ubuntu-via-command-line). If you've previously installed `conda` on the server but see the error `conda: command not found` it's because you need to intialize an interactive Bash session first. To do so, source the `.bashrc` shell script using `$ source ~/.bashrc`.  
+
+We use `conda` to *create* a virtual environment containing the Python packages we need for our project:
+
+```
+$ conda create -n maskrcnn python=3.6 pip
+```
+
+The above bash command creates a virtual environment called `maskrcnn` that includes Python 3.6 and the `pip` package installation package. If you know the packages you will be using ahead of time you can include them in the command above after `pip`, otherwise you can subsequently use `pip` to install packages into the environment. 
+
+When it's time to work on the project, we navigate to the project directory (e.g. a GitHub repo cloned to the server) and *activate* the environment:
+
+```
+$ source activate maskrcnn
+```
+
+If successful, you will see the environment's name in parentheses preceeding the command prompt, e.g. `(maskrcnn) tclavelle@tana:~/tana-crunch/CropMask_RCNN$`
+
+### 4. Jupyter Notebooks
+
+Now that our virtual environment is active, we can begin using Jupyter Notebooks to write the Python code for our analysis. If working on a local machine, Jupyter can be launched simply by running the `$ jupyter notebook` command, which opens the Jupyter Notebook server in your web browser. 
+
+When working on a remote server with no web browser we can use Jupyter Hub to access notebooks running on the remote server (tana) from our local browser. First, launch Jupyter Notebooks from the remote server with the following command:
+
+```
+$ jupyter notebook --no-browser --port 8000
+```
+
+This tells the server to launch a Jupyter Notebook instance without opening a web browser and make it available via the server's 8000 port. Next, we connect to the Notebook instance via Jupyter Hub by navigating to https://tana.er.ucsb.edu:8000/hub/login and signing in with the same credentials used to SSH into the server.
+
+
+
+
+

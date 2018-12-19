@@ -14,7 +14,7 @@ library(patchwork)
 # Read shapefile
 indo <- st_read(dsn = "../../../Shapefiles/IDN_adm_shp/", layer = "IDN_adm1")
 # Production and area data
-aqua <- read_csv(file = "../sfg-aqua-data/indo-data/indo_aqua_stats.csv", na = c("-"))
+# aqua <- read_csv(file = "../sfg-aqua-data/indo-data/indo_aqua_stats.csv", na = c("-"))
 # Simplify shapefile
 indo <- st_simplify(indo, dTolerance = 0.01)
 ```
