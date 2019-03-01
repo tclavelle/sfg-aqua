@@ -1,0 +1,168 @@
+---
+title: "Aquaculture Mapping Project Overview"
+author: "Sustainable Fisheries Group, UCSB"
+date: "3/1/2019"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+> This document outlines the objectives, methods, resources, and status of SFG's work to map global aquaculture using satellite imagery and machine learning. The goal of this document is to facilitate the continuation of this project in the future should additional funding and/or resources become available. Contact Tyler Clavell (tyler.clavelle@gmail.com) with any questions.
+
+## Background
+
+Marine aquaculture, known as mariculture, is an efficient food source containing high quality protein as well as an important form of employment, especially in developing countries. Unfortunately, despite mariculture’s clear role in global food security, we still lack basic spatial knowledge about the sector and no global map of farm-scale mariculture currently exists. This information is fundamental to improving our understanding of mariculture’s productivity and interactions with wild fisheries and the environment, as well as critical for our ability to understand where production should be expanded and where it should be restrained.
+
+Fortunately, satellite imagery has advanced to a point where it is now possible to identify mariculture farms from space. Together with modern big data and machine learning techniques, producing a high-resolution map of global mariculture may now be possible. However, mariculture is a globally distributed and diverse activity that takes numerous forms. As a result, comprehensively mapping global aquaculture will require a variety of datasets and analytical techniques. **The objective of this project is to develop the necessary dataset and tools and produce a global map of marine aquaculture.** Such a map will dramatically improve the ability for researchers and managers to study and steward this important use of marine space.
+
+## Methods
+
+### Overview
+The methods and approach for this project can be organized according to the following major steps:  
+
+1. Identify the major categories of marine aquaculture farms according to the physical characteristics of the farm (Figure 1)
+    + These characteristics are how farms are distinguished and differentiated in satellite images
+    + Identified four major categories of mariculture farms:
+      + **Cages:** Large partly or fully submerged cages containing finfish species like salmon and tuna
+      + **Rafts:** Floating rafts that generally contain numerous finfish or shellfish compartments.
+      + **Lines:** Submerged longlines used to farm shellfish and seaweed. These lines can be tightly aggregated into groups or more spread out. Lines may also be used to suspend things like oyster nets and other shellfish containers.
+      + **Ponds:** Coastal ponds used for finfish and shrimp aquaculture. Though not located directly in the ocean, these farms directly affect coastal ecosystems and have historically been a major driver of mangrove deforestation.
+
+```{r, out.width='80%', fig.align='center', , fig.cap='Examples of the four main aquaculture types' }
+knitr::include_graphics(path = '../../../Box Sync/SFG Centralized Resources/Projects/Aquaculture/Waitt Aquaculture/aqua-mapping/aqua-mapping-results/aqua_reference_examples.png')
+```
+
+
+2. Compile a library of high-resolution images containing aquaculture
+
+3. Build a dataset of annotated images for use in training machine learning models to detect aquaculture farms
+
+4. Identify, train, and test suitable machine learning models
+
+5. Apply model(s) to produce global map of aquaculture
+
+### Data
+
+The data for this project come from [Planet Labs Inc.](https://www.planet.com), a private satellite imagery company that is imaging the entire globe every day. The specific Planet data product used are [PlanetScope Analytic SR Basic](https://www.planet.com/products/satellite-imagery/files/1610.06_Spec%20Sheet_Combined_Imagery_Product_Letter_ENGv1.pdf) satellite (GeoTiff) images. All images have a three meter resolution and four spectral bands (B,G,R,NIR). Images were acquired by applying for an [Education and Research account](https://www.planet.com/markets/education-and-research/), which grants each account holder a 10,000 km<sup>2</sup> per month download quota.
+
+### Model
+
+Through scoping and conversations with remote sensing experts, convolutional neural networks (CNNs) were identified as the most promising family of algorithms for mapping aquaculture farms. CNNs are a cutting-edge form of “deep” machine learning particularly suited for object detection image analysis and have recently been used by the natural and social sciences for such tasks as detecting reef fish in underwater videos, estimating reef fish abundance from images of coral cover, and predicting poverty from satellite imagery.
+
+There are a variety of CNN architectures suited for different types of object detection. For this project, we chose to use [Mask-RCNN](https://arxiv.org/abs/1703.06870), a CNN architecture designed for object instance segmentation - the ability to identify, locate, and differentiate individual objects from numerous classes. For example, given an image containing 4 balloons, Mask-RCNN is capable of identifying that there are four different balloons and outlining the location of each balloon in the image.
+
+A significant advantage of using a CNN is the ability for "transfer learning" - where the coefficients of a CNN model previously trained on a different dataset are used as starting values for training a new CNN model. This allows the new model to take advantage of the high level object features (corners, curves, etc.) that were learned by a CNN model trained on a much larger dataset. There are several well known image datasets that are used as standards for training new CNNs and testing their performance. In particular, the [Common Objects in Context (COCO)](http://cocodataset.org/#home) dataset is frequently used for object detection tasks. For this project, the COCO model weights were downloaded and used as pretrained weights in our implementation of Mask_RCNN.
+
+>**Note:** Initial work on the project was done using [Google Earth Engine (GEE)](https://earthengine.google.com), a planetary scale remote sensing platform that offers free access to many public datasets. We tested several simple machine learning algorithms (random forest and support vector machine) using the Sentinel-2 (spectral) satellite dataset. We also partially implemented the methods of Ottinger et al. (2017), which applies more conventional remote sensing techniques (thresholding and object-based methods) to identify aquaculture ponds. It was determined that GEE was adequate for mapping pond aquaculture with Sentinel-1, but that mapping other aquaculture types required higher resolution spectral imagery not readily available in GEE. As a result, the project's focus shifted to using alternative imagery and analytical tools
+
+### Code
+
+This analysis is done entirely using Python because Python is more specialized for image processing and because there is an existing [Python implementation Mask-RCNN](https://github.com/matterport/Mask_RCNN) available on GitHub. As a result, there are two GitHub code repositories used for this project:
+  
++ [`tclavelle/aqua_python`](https://github.com/tclavelle/aqua_python): This repository contains Jupiter Notebooks with the Python code used to process raw Planet images into the files and formats used for image annotation and model training
+
++ [`rbavery/CropMask_RCNN`](https://github.com/rbavery/CropMask_RCNN/tree/aquaculture): This repository is owned by ERI Phd student Ryan Avery who is using Mask RCNN for mapping agricultural fields in Africa. We collaborated with Ryan to figure out how to implement Mask RCNN with Planet data. The repository contains an `aquaculture` branch with Jupiter Notebooks that build, train, and test a Mask-RCNN model on aquaculture images
+    + **Note:** This repository is no longer being developed and the active code base was migrated to `ecohydro/CropMask_RCNN`
+
+#### Python and computing environments
+
+This project used the [Anaconda Python distribution and package manager](https://docs.conda.io/projects/conda/en/latest/) to manage Python virtual environments and modules. Additionally, the Mask-RCNN Python implementation exists as a Python module that must be installed into the virtual environment used for running the analysis. Training a Mask-RCNN model requires a GPU server. The models for this project were trained/tested using the Tana GPU server at UCSB's Earth Research Institute (ERI).
+
+### Workflow
+  
+#### 1. Image acquisition
+
+Planet images containing aquaculture were manually identified using the [Planet Explorer](https://www.planet.com/explorer/) platform by searching in areas known to currently contain high amounts of aquaculture (Chile, Norway, China, Indonesia, etc.). Care was taken to download images from a globally representative sample of countries and aquaculture types.
+
+The raw files for downloaded scenes are saved in their original Planet order folder in SFG's Box directory at the following path: `SFG Centralized Resources/Projects/Aquaculture/Waitt Aquaculture/aqua-mapping/aqua-mapping-data/aqua-images/planet`.
+
+##### Code files
+
++ `planet_api_intro.ipynb (aqua_python)` - Connects to the Planet API and checks status of monthly quota usage
+
+#### 2. Image processing
+
+The imagery files downloaded from Planet are large (~400 km<sup>2</sup>) raw 4-band 16-bit depth GeoTiffs. Images are then split into square image "chips" approximately 500x500 pixels and saved in two forms:
+
++ Raw 4-band 16-bit GeoTiff to be used for model training
++ Color corrected 3-band RGB PNG image to be used for annotating images with aquaculture labels
+
+##### Code files
+
++ `process_planet_scenes.ipynb (aqua_python)` - Contains code for numerous processing steps developed in other notebooks. Takes original directories of image orders from Planet and, for each image in the order, generates directories of paired image chips in GeoTiff and PNG formats. Also contains code to process VGG labeling projects.
+
++ `planet_tiff2tiles.ipynb (aqua_python)` - Processes PlanetScope 4-band GeoTiff images and generates directories of paired image chips in GeoTiff and PNG formats
+
++ `visualization_testing.ipynb (aqua_python)` - Tests various methods of color correction for converting the raw 16-bit GeoTiffs to RGB images suitable for annotation
+
++ `create_mask_instances.ipynb [DEPRECATED]` - Creates instance-specific masks for every aquaculture object in a class-specific mask. Code no longer used and masks are created during dataset creation in TensorFlow
+
++ `chip_labeled_planet.ipynb [DEPRECATED]` - Processes two PlanetScope scenes that contain extra bands representing class-specific masks and generates directories of image chips with class-specific create_mask_instances. Code no longer part of workflow.
+
+#### 3. Image annotation
+
+Training a Mask-RCNN model requires a dataset of images where each object of the target type (e.g. aquaculture) is individually outlined and labeled according to its class (e.g. "cage", "line", etc.). These labels are stored as binary masks, one per class, where pixels belonging to objects of that class receive a value of `1`.
+
+We used the [VGG Image Annotator (VIA)](http://www.robots.ox.ac.uk/~vgg/software/via/) program for labeling images. We chose to use VIA because it is a free program that can be customized.
+
+We developed an aquaculture labeling template. New images can be labeled by following these steps:  
+
+1. Copy the `template` folder and rename it to some easily identifiable name (e.g. `norway_cages`)
+2. Add a `pngs` folder within the newly created labelling project folder
+3. Follow the detailed instructions for labelling images available at `SFG Centralized Resources/Projects/Aquaculture/Waitt Aquaculture/aqua-mapping/aqua-mapping-data/aqua-images/Instructions for Labeling Images.docx`
+
+#### 4. Model training and testing
+
+Once images have been processed and labeled they must be uploaded to the GPU server used to train the Mask-RCNN model. Once on the server, there are three steps required to train the model:
+
+1. Inspect the dataset to be used for training
+2. Update the model configuration to match the new dataset
+3. Run the Mask-RCNN model
+
+##### Code files
+
++ `inspect_aqua_data.ipynb (CropMask_RCNN)` - This Jupiter Notebook loads the dataset, partitions it into training and testing sets, and calculates parameter values that are inputs to the model configuration file. These necessary parameters must be updated for each model run and include mean values for each band, the min/max dimensions of images in the dataset, and the scales for the region proposal network (RPN).
+
++ `aqua_configs.py (CropMask_RCNN)` - This Python script contains the model configuration parameters that are loaded at the time of model training. Several of these parameters must be updated (and the script resaved) according to the results of `inspect_aqua_data.ipynb`.
+
++ `aqua_mask.py (CropMask_RCNN)` - This Python script will train the Mask-RCNN model. It must be run from the server's command line using one of the function calls described in the comments at the top of the script. These function calls mainly differ depending on whether you want to train a model from scratch, build off a model you trained previously, or start from a weights file from a different dataset such as COCO. 
+
+### Preliminary Results
+
+To date, this project has trained and tested three different model iterations, with variable success. 
+
+1. **Model 1**: The first model was trained on ~450 image chips (250x250 pixels) containing primarily aquaculture raft and line classes. This model did not use pre-trained COCO weights. 
+
+```{r, out.width='60%', fig.align='center', fig.cap='Results for model 1' }
+knitr::include_graphics(path = '../../../Box Sync/SFG Centralized Resources/Projects/Aquaculture/Waitt Aquaculture/aqua-mapping/aqua-mapping-results/initial_model_example.png')
+```
+
+2. **Model 2**: The second model was trained on the same ~450 image chips but used the pre-trained COCO weights. Results were considerably better, with the model detecting objects of the correct class. However, there was a high type 2 error rate.
+
+```{r, out.width='60%', fig.align='center', fig.cap='Results for model 2' }
+knitr::include_graphics(path = '../../../Box Sync/SFG Centralized Resources/Projects/Aquaculture/Waitt Aquaculture/aqua-mapping/aqua-mapping-results/model_2_example.png')
+```
+
+3. **Model 3**: The third model focused exclusively on fish cages in Chile. These cages are very distinct and easily recognizable to the human eye. The model trained on ~45 image chips (500x500 pixels) using pre-trained COCO weights. This model was very successful and correctly identified and located all cage objects in test images with high accuracy. 
+
+```{r, out.width='100%', fig.align='center', fig.cap='Results for model 3' }
+knitr::include_graphics(path = '../../../Box Sync/SFG Centralized Resources/Projects/Aquaculture/Waitt Aquaculture/aqua-mapping/aqua-mapping-results/salmon_predictions.png')
+```
+
+### Challenges and Future Considerations
+
+The results of the project are mixed but encouraging, particularly model three. However, several key challenges were identified that need to be considered in the future.  
+
++ Aquaculture objects can vary dramatically in appearance, density, and visibility (Figure 1) - aquaculture lines in China look very different then aquaculture lines in Chile; salmon cages in Chile are much different than salmon cages in Norway, which are in turn rather different from finfish cages in Greece. Farms objects can also vary dramatically within the same country based - extensive aquaculture ponds in Indonesia are very different than intensive systems. As a result of these types of differences, a key challenge to using a CNN to detect aquaculture farms is determining the appropriate number of aquaculture classes. It is likely that the existing four class model (cages, rafts, lines, ponds) is inadequate and needs to be expanded. 
+
++ It can often be unclear what the "unit" is for labeling the farm object, especially for aquaculture lines and rafts that are generally very close to each other (Figure 5) and in regions like Southeast Asia where aquaculture farms exist in extremely high densities. The decision of when/how to group aquaculture objects in the labeling process is not trivial and likely has a strong effect on results.
+
+```{r, out.width='60%', fig.align='center', fig.cap='Example of a challenging and poorly labeled scene' }
+knitr::include_graphics(path = '../../../Box Sync/SFG Centralized Resources/Projects/Aquaculture/Waitt Aquaculture/aqua-mapping/aqua-mapping-results/labeling_challenge_example.png')
+```
+
++ Access to the Tana server used to train/test models 1-3 will likely be limited in the future. Contact ERI Director and Bren professor Kelly Caylor to inquire about access. Cloud virtual machines are another option but will likely be expensive.
